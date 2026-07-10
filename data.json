@@ -67,7 +67,7 @@
             { "platform": "GitHub", "url": "https://github.com/mu1aq", "label": "@mu1aq" },
             { "platform": "X", "url": "https://x.com/mu1aq_", "label": "@mu1aq_" },
             { "platform": "Instagram", "url": "https://instagram.com/tlswnstj_s.j.s", "label": "@tlswnstj_s.j.s" },
-            { "platform": "Signal", "url": "", "label": "PLACEHOLDER: paste your signal.me link" }
+            { "platform": "Signal", "url": "https://signal.me/#eu/TP81vnXy5VKjrKmOGD7MNlr_-k8brGmvRJVOV-Rg_s9ztCKDlZNNc7ZIWGPDsFJy", "label": "@mu1aq" }
         ],
         "skills": ["Python", "C/C++", "JavaScript" , "GDB", "IDA", "BurpSuite", "pwntools", "OSINT"],
         "blogs": [
@@ -156,7 +156,7 @@
             { "platform": "GitHub", "url": "https://github.com/mu1aq", "label": "@mu1aq" },
             { "platform": "X", "url": "https://x.com/mu1aq_", "label": "@mu1aq_" },
             { "platform": "Instagram", "url": "https://instagram.com/tlswnstj_s.j.s", "label": "@tlswnstj_s.j.s" },
-            { "platform": "Signal", "url": "", "label": "PLACEHOLDER: paste your signal.me link" }
+            { "platform": "Signal", "url": "https://signal.me/#eu/TP81vnXy5VKjrKmOGD7MNlr_-k8brGmvRJVOV-Rg_s9ztCKDlZNNc7ZIWGPDsFJy", "label": "@mu1aq" }
         ],
         "skills": ["Python", "C/C++", "JavaScript" , "GDB", "IDA", "BurpSuite", "pwntools", "OSINT"],
         "blogs": [
