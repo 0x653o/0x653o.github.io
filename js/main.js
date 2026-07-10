@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const links = data.links || [];
         const title = (data.labels && data.labels.links) || 'CONNECT';
         const rows = links.map((l) => `
-            <a href="${l.url}" target="_blank" rel="noopener" class="mention-row">
+            <a href="${l.url || '#connect'}" ${l.url ? 'target="_blank" rel="noopener"' : ''} class="mention-row">
                 <span class="mention-handle">${l.platform}</span>
                 <span class="mention-id">${l.label}</span>
                 <span class="mention-arrow">&#8599;</span>
