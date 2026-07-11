@@ -6,7 +6,7 @@
             "email": "r1pp3r.mu1aq.0x0@proton.me",
             "role": "Student",
             "location": "SEOUL / KR",
-            "bio": "Studying the deep architecture of complex systems to discover vulnerabilities where they are least expected. Also studying Red team operation for someday to become nation-state hacker",
+            "bio": "Studying the deep architecture of complex systems to discover logic bugs and memory corruption. Also studying Red team operation.",
             "status": "Sejong Univ. Sophomore / Researching Internals"
         },
         "about": {
@@ -14,10 +14,9 @@
             "content": "A cybersecurity researcher focused on the internals of modern software. Lately, to sharpen my fundamentals, I've been digging into the deep internals of systems."
         },
         "affiliations": [
-            "Cyb3rPunk! (Advisor)",
+            "Cyb3rPunk!",
             "SSG (Security . Security . Group)",
-            "Red Cat (Red Team)",
-            "Sejong University"
+            "Red Cat (Red Team)"
         ],
         "timeline": [
             {
@@ -27,41 +26,32 @@
             },
             {
                 "year": "2026 ~ ",
-                "event": "Academic Director & Advisor Roles",
-                "detail": "Directing SSG Academic Curriculum / Advising Cyb3rPunk!"
+                "event": "WhiteHat School 4th (KISA)",
+                "detail": "Final Acceptance / Currently Enrolled"
+            },
+            {
+                "year": "2026",
+                "event": "HSPACE Digital Forensics Challenge — 4th Place",
+                "detail": "Team 양윤모여친구함 / Digital Forensics"
             },
             {
                 "year": "2025 - 2026",
                 "event": "IPCam Vulnerability Analysis Research",
-                "detail": "SSG Embedded Project / Android Security Focus · Prticipant"
+                "detail": "SSG Embedded Project / Android Security Focus",
+                "group": "ipcam"
             },
             {
                 "year": "2025 - 2026",
                 "event": "Web3 BugBounty Research Project",
-                "detail": "DeFi & Ethereum Smart Contract Auditing · Project Lead"
-            },
-            {
-                "year": "2025",
-                "event": "General Director",
-                "detail": "SSG General Director / Leading SSG's Few Operations"
-            },
-            {
-                "year": "2023",
-                "event": "Reflective XSS Fuzzer Development",
-                "detail": "Automation of Web Vulnerability Discovery"
+                "detail": "SSG Web3 Project / Ethereum Smart Contract Auditing",
+                "group": "web3"
             }
         ],
-        "now": ["Red Team Pentest", "Lockpicking", "Info Collecting"],
-        "interests": ["Red Teaming", "Windows Exploit", "Kernel Exploit", "Browser Exploit", "Embedded Systems", "OSINT"],
-        "community": [
-            { "role": "Academic Director", "org": "SSG (Security . Security . Group)" },
-            { "role": "Advisor", "org": "Cyb3rPunk!" },
-            { "role": "Red Teaming Operation Research Team", "org": "Red Cat" }
-        ],
+        "now": ["WhiteHat School 4th", "Red Team Pentest", "Lockpicking", "Info Collecting"],
+        "interests": ["Red Teaming", "Windows Exploit", "Sandbox", "Browser Exploit", "Embedded Systems", "OSINT"],
         "projects": [
-            { "year": "2026", "title": "IPCam Research", "tag": "HARDWARE, Android", "link": "https://github.com/2025-SSG-Embbeded-Project/IpCam-Vuln-Analysis" },
-            { "year": "2026", "title": "Web3 BugBounty", "tag": "DEFI, ETH", "link": "https://github.com/SSG-web3-BugBounty-Project-ETH/web3_BugBounty_Project_ETH" },
-            { "year": "2023", "title": "Reflective XSS Fuzzer", "tag": "WEB_SEC", "link": "" }
+            { "year": "2026", "title": "IPCam Research", "tag": "HARDWARE, Android", "link": "https://github.com/2025-SSG-Embbeded-Project/IpCam-Vuln-Analysis", "group": "ipcam" },
+            { "year": "2026", "title": "Web3 BugBounty", "tag": "DEFI, ETH", "link": "https://github.com/SSG-web3-BugBounty-Project-ETH/web3_BugBounty_Project_ETH", "group": "web3" }
         ],
         "links": [
             { "platform": "GitHub", "url": "https://github.com/mu1aq", "label": "@mu1aq" },
@@ -77,15 +67,16 @@
         "labels": {
             "now": "CURRENTLY",
             "interests": "FOCUS",
-            "works": "SELECTED_WORKS",
+            "works": "PROJECTS",
             "stack": "TECH_STACK",
             "timeline": "HISTORY",
-            "community": "COMMUNITY",
             "contact": "CONTACT",
             "links": "CONNECT",
             "blogs": "BLOG",
             "gpg": "GPG PUBLIC KEY",
-            "discord": "DISCORD"
+            "discord": "DISCORD",
+            "archive": "ARCHIVE",
+            "repos": "PUBLIC_REPOS"
         }
     },
     "ko": {
@@ -95,62 +86,52 @@
             "email": "r1pp3r.mu1aq.0x0@proton.me",
             "role": "학생",
             "location": "대한민국 / 서울",
-            "bio": "복잡한 시스템의 아키텍처를 연구하며, 예상치 못한 곳에서 취약점을 발견하는 것에 집중합니다. 또한 훗날 nation-state 해커가 되기 위하여 Red Team 에 대해 공부합니다.",
+            "bio": "복잡한 시스템의 아키텍처를 연구하며 로직버그와 memory corruption을 발견하는 데 집중합니다. 또한 Red Team을 공부합니다.",
             "status": "세종대학교 2학년 / 학업 중,,,"
         },
         "about": {
-            "title": "소개",
-            "content": "Pentesting과 보안 연구에 열정을 가진 학생입니다. 다양한 시스템에 대해 공부하고 있습니다. 요즘은 기본기를 늘리고자 시스템의 internals를 파고들며 공부하고 있습니다."
+            "title": "ABOUT",
+            "content": "Pentesting과 보안 연구에 열정이 있는 학생입니다. 다양한 시스템을 공부하고 있습니다. 요즘은 기본기를 늘리고자 시스템의 internals를 파고들고 있습니다."
         },
         "affiliations": [
-            "Cyb3rPunk! (자문)",
-            "SSG (학술부장)",
-            "Red Cat (Red Team)",
-            "세종대학교"
+            "Cyb3rPunk!",
+            "SSG (Security . Security . Group)",
+            "Red Cat (Red Team)"
         ],
         "timeline": [
             {
                 "year": "DEF CON 34",
-                "event": "CTF 본선 진출 (Finalist)",
+                "event": "CTF Finalist",
                 "detail": "CTF Finals — Jinddabi's team"
             },
             {
                 "year": "2026 ~ ",
-                "event": "학술부장 및 자문 활동",
-                "detail": "SSG 학술 커리큘럼 총괄 / Cyb3rPunk! 운영 자문"
+                "event": "WhiteHat School 4th (KISA)",
+                "detail": "교육생 최종합격 / 수료 중"
             },
             {
-                "year": "2025 ~ 2026",
-                "event": "IPCam 취약점 분석 연구",
-                "detail": "SSG 임베디드 프로젝트 팀원 / 안드로이드 보안"
+                "year": "2026",
+                "event": "HSPACE Digital Forensics Challenge — 4th Place",
+                "detail": "Team 양윤모여친구함 / Digital Forensics"
             },
             {
-                "year": "2025 ~ 2026",
-                "event": "Web3 버그바운티 연구 프로젝트",
-                "detail": "SSG WEB3 팀 리드 / DeFi 및 이더리움 스마트 컨트랙트 오딧"
+                "year": "2025 - 2026",
+                "event": "IPCam Vulnerability Analysis Research",
+                "detail": "SSG Embedded Project / 안드로이드 보안",
+                "group": "ipcam"
             },
             {
-                "year": "2025",
-                "event": "총괄 디렉터",
-                "detail": "SSG 총괄 디렉터 / SSG의 몇몇 운영 리드"
-            },
-            {
-                "year": "2023",
-                "event": "XSS 퍼저 개발",
-                "detail": "웹 취약점 탐지 자동화 연구"
+                "year": "2025 - 2026",
+                "event": "Web3 BugBounty Research Project",
+                "detail": "SSG Web3 Project / 이더리움 스마트 컨트랙트 오딧",
+                "group": "web3"
             }
         ],
-        "now": ["Red Team 모의침투", "Lockpicking", "Info Collecting"],
-        "interests": ["Red Teaming", "Windows Exploit", "Kernel Exploit", "Browser Exploit", "Embedded System", "OSINT"],
-        "community": [
-            { "role": "학술부장", "org": "SSG (세종대학교 보안 동아리)" },
-            { "role": "자문", "org": "Cyb3rPunk!" },
-            { "role": "Red Teaming Operation 연구팀", "org": "Red Cat" }
-        ],
+        "now": ["WhiteHat School 4th", "Red Team Pentest", "Lockpicking", "Info Collecting"],
+        "interests": ["Red Teaming", "Windows Exploit", "Sandbox", "Browser Exploit", "Embedded Systems", "OSINT"],
         "projects": [
-            { "year": "2026", "title": "IPCam 취약점 연구", "tag": "HARDWARE, Android", "link": "https://github.com/2025-SSG-Embbeded-Project/IpCam-Vuln-Analysis" },
-            { "year": "2026", "title": "Web3 버그바운티", "tag": "DEFI, ETH", "link": "https://github.com/SSG-web3-BugBounty-Project-ETH/web3_BugBounty_Project_ETH" },
-            { "year": "2023", "title": "반사형 XSS 퍼저", "tag": "WEB_SEC", "link": "" }
+            { "year": "2026", "title": "IPCam Research", "tag": "HARDWARE, Android", "link": "https://github.com/2025-SSG-Embbeded-Project/IpCam-Vuln-Analysis", "group": "ipcam" },
+            { "year": "2026", "title": "Web3 BugBounty", "tag": "DEFI, ETH", "link": "https://github.com/SSG-web3-BugBounty-Project-ETH/web3_BugBounty_Project_ETH", "group": "web3" }
         ],
         "links": [
             { "platform": "GitHub", "url": "https://github.com/mu1aq", "label": "@mu1aq" },
@@ -164,17 +145,18 @@
             { "platform": "Velog", "handle": "velog.io/@653o", "url": "https://velog.io/@653o/posts" }
         ],
         "labels": {
-            "now": "요즘",
-            "interests": "관심 분야",
-            "works": "주요 프로젝트",
-            "stack": "기술 스택",
-            "timeline": "활동 이력",
-            "community": "커뮤니티",
+            "now": "CURRENTLY",
+            "interests": "FOCUS",
+            "works": "PROJECTS",
+            "stack": "TECH_STACK",
+            "timeline": "HISTORY",
             "contact": "CONTACT",
-            "links": "연락 및 링크",
-            "blogs": "블로그",
-            "gpg": "GPG 공개키",
-            "discord": "디스코드"
+            "links": "CONNECT",
+            "blogs": "BLOG",
+            "gpg": "GPG PUBLIC KEY",
+            "discord": "DISCORD",
+            "archive": "ARCHIVE",
+            "repos": "PUBLIC_REPOS"
         }
     },
     "gpg": "-----BEGIN PGP PUBLIC KEY BLOCK-----\n\nPLACEHOLDER: paste your armored GPG public key here.\nExport it with:  gpg --armor --export <your-key-id>\n\n-----END PGP PUBLIC KEY BLOCK-----",

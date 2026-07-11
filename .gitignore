@@ -1,0 +1,4 @@
+# Claude Code local files — not for the published site
+.claude/
+CLAUDE.md
+_workspace/

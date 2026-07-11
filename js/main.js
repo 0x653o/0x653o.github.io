@@ -9,9 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
             globalData = data;
             render(currentLang);
             initLanguageToggle();
+            initSidebar();
             initModal();
         })
         .catch(err => console.error('Error loading data:', err));
+
+    initRepos();
 
     function render(lang) {
         const data = globalData[lang];
@@ -25,17 +28,18 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('hero-name-container').innerHTML = `${data.user.name} <span class="italic">${data.user.handle}</span>`;
         }
         setText('hero-subtitle', data.user.bio);
-        
+
         // Labels
-        setText('label-about', data.labels.timeline ? data.en ? "ABOUT" : data.labels.about || "ABOUT" : "ABOUT"); 
+        setText('label-about', data.labels.timeline ? data.en ? "ABOUT" : data.labels.about || "ABOUT" : "ABOUT");
         // Re-mapping labels for clarity
         setText('label-about', data.about.title);
         setText('label-timeline', data.labels.timeline);
         setText('label-now', data.labels.now);
         setText('label-interests', data.labels.interests);
-        setText('label-community', data.labels.community);
         setText('label-works', data.labels.works);
         setText('label-stack', data.labels.stack);
+        setText('label-archive', data.labels.archive);
+        setText('label-repos', data.labels.repos);
 
         // Content
         setText('about-text', data.about.content);
@@ -52,12 +56,15 @@ document.addEventListener('DOMContentLoaded', () => {
         renderList('timeline-container', data.timeline, (item, index) => {
             const isEven = index % 2 === 0;
             const detail = (item.detail || '').replace(/ \/ /g, '<br>');
+            const archiveLink = item.group
+                ? `<a class="tl-archive-link" href="#archive-${item.group}">ARCHIVE &#8599;</a>` : '';
             return `
                 <div class="tl-item">
                     <div class="tl-left">
                         ${isEven ? `
                             <div class="tl-year-large">${item.year}</div>
                             <div class="tl-event-text">${item.event}</div>
+                            ${archiveLink}
                         ` : `
                             <div class="tl-detail-text">${detail}</div>
                         `}
@@ -67,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${!isEven ? `
                             <div class="tl-year-large">${item.year}</div>
                             <div class="tl-event-text">${item.event}</div>
+                            ${archiveLink}
                         ` : `
                             <div class="tl-detail-text">${detail}</div>
                         `}
@@ -75,19 +83,13 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         });
 
+        renderArchive(data);
+
         // Currently
         renderList('now-container', data.now, (item) => `<span>${item}</span>`);
 
         // Focus / Interests
         renderList('interests-container', data.interests, (item) => `<span>${item}</span>`);
-
-        // Community
-        renderList('community-container', data.community, (item) => `
-            <div class="community-entry">
-                <h3>${item.org}</h3>
-                <p>${item.role}</p>
-            </div>
-        `);
 
         // Projects
         renderList('projects-container', data.projects, (item) => `
@@ -121,6 +123,68 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // ---- Archive: history + projects merged by shared "group" key ----
+    function renderArchive(data) {
+        const container = document.getElementById('archive-container');
+        if (!container) return;
+        const projByGroup = {};
+        (data.projects || []).forEach((p) => { if (p.group) projByGroup[p.group] = p; });
+        const merged = new Set();
+        const rows = [];
+        (data.timeline || []).forEach((t, i) => {
+            const p = t.group ? projByGroup[t.group] : null;
+            if (p) merged.add(t.group);
+            rows.push({
+                id: t.group || 'h' + i,
+                year: t.year,
+                title: t.event,
+                sub: p ? p.title : (t.detail || ''),
+                link: p ? p.link : '',
+                tag: p ? 'HISTORY + PROJECT' : 'HISTORY'
+            });
+        });
+        (data.projects || []).forEach((p, i) => {
+            if (p.group && merged.has(p.group)) return;
+            rows.push({ id: p.group || 'p' + i, year: p.year, title: p.title, sub: p.tag, link: p.link, tag: 'PROJECT' });
+        });
+        container.innerHTML = rows.map((r) => {
+            const inner = `
+                <span class="ar-year">${r.year}</span>
+                <span class="ar-main">
+                    <span class="ar-title">${r.title}</span>
+                    ${r.sub ? `<span class="ar-sub">${r.sub}</span>` : ''}
+                </span>
+                <span class="ar-tag">${r.tag}${r.link ? ' &#8599;' : ''}</span>
+            `;
+            return r.link
+                ? `<a id="archive-${r.id}" class="archive-row" href="${r.link}" target="_blank" rel="noopener">${inner}</a>`
+                : `<div id="archive-${r.id}" class="archive-row">${inner}</div>`;
+        }).join('');
+    }
+
+    // ---- Public GitHub repos (live, unauthenticated API) ----
+    function initRepos() {
+        const container = document.getElementById('repos-container');
+        if (!container) return;
+        fetch('https://api.github.com/users/mu1aq/repos?per_page=100&sort=updated')
+            .then((r) => r.ok ? r.json() : Promise.reject(r.status))
+            .then((repos) => {
+                const own = repos.filter((r) => !r.fork);
+                container.innerHTML = own.map((r) => `
+                    <a class="repo-item" href="${r.html_url}" target="_blank" rel="noopener">
+                        <span class="repo-head">
+                            <span class="repo-name">${escapeHtml(r.name)}</span>
+                            <span class="repo-lang">${escapeHtml(r.language || '')} &#8599;</span>
+                        </span>
+                        ${r.description ? `<span class="repo-desc">${escapeHtml(r.description)}</span>` : ''}
+                    </a>
+                `).join('');
+            })
+            .catch(() => {
+                container.innerHTML = '<p class="modal-empty">Failed to load repositories.</p>';
+            });
+    }
+
     function initLanguageToggle() {
         const enBtn = document.getElementById('lang-en');
         const koBtn = document.getElementById('lang-ko');
@@ -145,6 +209,96 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById(`lang-${currentLang}`).classList.add('active');
     }
 
+    // ---- Layer stack: sidebar / modal ----
+    // Overlay click and ESC close only the top-most layer, so a modal
+    // opened from the sidebar pops back to the still-open sidebar.
+    const layerStack = [];
+
+    function pushLayer(name, container) {
+        if (layerStack.some((l) => l.name === name)) return;
+        layerStack.push({ name, container, trigger: document.activeElement });
+        document.body.style.overflow = 'hidden';
+    }
+
+    function removeLayer(name) {
+        const idx = layerStack.map((l) => l.name).lastIndexOf(name);
+        if (idx === -1) return;
+        const [layer] = layerStack.splice(idx, 1);
+        if (!layerStack.length) document.body.style.overflow = '';
+        if (layer.trigger && typeof layer.trigger.focus === 'function') layer.trigger.focus();
+    }
+
+    // visibility transitions leave the layer computed-hidden at open time;
+    // focus after the first paint so the element is focusable
+    function focusWhenVisible(el) {
+        if (!el) return;
+        requestAnimationFrame(() => requestAnimationFrame(() => el.focus()));
+    }
+
+    function closeTopLayer() {
+        const top = layerStack[layerStack.length - 1];
+        if (!top) return;
+        if (top.name === 'modal') closeModalAndClearHash();
+        else closeSidebar();
+    }
+
+    // ESC pops top layer; Tab is trapped inside the top layer.
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeTopLayer();
+            return;
+        }
+        if (e.key !== 'Tab' || !layerStack.length) return;
+        const top = layerStack[layerStack.length - 1];
+        const focusables = top.container.querySelectorAll('a[href], button:not([disabled])');
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (!top.container.contains(document.activeElement)) {
+            e.preventDefault();
+            first.focus();
+        } else if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    });
+
+    // ---- Sidebar ----
+    function openSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar) return;
+        pushLayer('sidebar', sidebar);
+        sidebar.classList.add('open');
+        sidebar.setAttribute('aria-hidden', 'false');
+        document.getElementById('sidebar-overlay').classList.add('open');
+        const menuBtn = document.getElementById('menu-btn');
+        if (menuBtn) menuBtn.setAttribute('aria-expanded', 'true');
+        focusWhenVisible(document.getElementById('sidebar-close'));
+    }
+
+    function closeSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar) return;
+        sidebar.classList.remove('open');
+        sidebar.setAttribute('aria-hidden', 'true');
+        document.getElementById('sidebar-overlay').classList.remove('open');
+        const menuBtn = document.getElementById('menu-btn');
+        if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+        removeLayer('sidebar');
+    }
+
+    function initSidebar() {
+        const menuBtn = document.getElementById('menu-btn');
+        if (menuBtn) menuBtn.addEventListener('click', openSidebar);
+        const closeBtn = document.getElementById('sidebar-close');
+        if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+        const overlay = document.getElementById('sidebar-overlay');
+        if (overlay) overlay.addEventListener('click', closeSidebar);
+    }
+
     // ---- Modal: blog list & gpg key ----
     function escapeHtml(str) {
         return String(str).replace(/[&<>"']/g, (c) => ({
@@ -155,11 +309,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function openModal(title, bodyHtml) {
         const overlay = document.getElementById('modal-overlay');
         if (!overlay) return;
+        pushLayer('modal', overlay);
         setText('modal-title', title);
         document.getElementById('modal-body').innerHTML = bodyHtml;
         overlay.classList.add('open');
         overlay.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
+        focusWhenVisible(document.getElementById('modal-close'));
     }
 
     function closeModal() {
@@ -167,7 +322,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!overlay) return;
         overlay.classList.remove('open');
         overlay.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
+        removeLayer('modal');
+    }
+
+    function closeModalAndClearHash() {
+        closeModal();
+        history.replaceState(null, '', location.pathname + location.search);
     }
 
     function openBlogModal() {
@@ -279,17 +439,10 @@ document.addEventListener('DOMContentLoaded', () => {
             history.replaceState(null, '', '#connect');
         });
 
-        const clearAndClose = () => {
-            closeModal();
-            history.replaceState(null, '', location.pathname + location.search);
-        };
         const closeBtn = document.getElementById('modal-close');
-        if (closeBtn) closeBtn.addEventListener('click', clearAndClose);
+        if (closeBtn) closeBtn.addEventListener('click', closeModalAndClearHash);
         if (overlay) overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) clearAndClose();
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') clearAndClose();
+            if (e.target === overlay) closeModalAndClearHash();
         });
 
         window.addEventListener('hashchange', routeHash);

@@ -21,6 +21,7 @@ body {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+    overflow-wrap: break-word;
 }
 
 /* Texture & Glow */
@@ -83,10 +84,36 @@ body {
     margin-bottom: 0;
 }
 
-.nav-links {
+.nav-right {
     display: flex;
     align-items: center;
-    gap: 32px;
+    gap: 16px;
+}
+
+/* Hamburger menu button (all viewports) */
+.menu-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 6px;
+    width: 44px;
+    height: 44px;
+    padding: 11px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.menu-btn span {
+    display: block;
+    height: 1px;
+    background: var(--text-primary);
+    transition: background 0.3s ease;
+}
+
+.menu-btn:hover span {
+    background: var(--text-secondary);
 }
 
 .lang-toggle {
@@ -112,24 +139,94 @@ body {
     font-weight: 700;
 }
 
-.nav-item {
-    text-decoration: none;
+/* Sidebar navigation (layer under modal: overlay z50 / panel z60 < modal z100) */
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sidebar-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    width: min(84vw, 340px);
+    display: flex;
+    flex-direction: column;
+    background: #000000;
+    border-left: 1px solid var(--border);
+    padding: 20px 28px 32px;
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s;
+}
+
+.sidebar.open {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 24px;
+}
+
+.sidebar-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: none;
     color: var(--text-secondary);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
     transition: color 0.3s ease;
 }
 
-.nav-item:hover {
+.sidebar-close:hover {
     color: var(--text-primary);
 }
 
-.circle-btn {
-    border: 1px solid var(--border);
-    padding: 8px 16px;
-    border-radius: 100px;
+.sidebar-links {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.side-item {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    border-bottom: 1px solid var(--border);
+    transition: color 0.3s ease, padding-left 0.3s ease;
+}
+
+.side-item:hover {
     color: var(--text-primary);
+    padding-left: 8px;
 }
 
 /* Hero Section */
@@ -139,7 +236,8 @@ body {
 
 .hero-top {
     display: flex;
-    gap: 40px;
+    flex-wrap: wrap;
+    gap: 12px 40px;
     margin-bottom: 24px;
 }
 
@@ -165,7 +263,7 @@ body {
 }
 
 .hero-subtitle {
-    font-size: 18px;
+    font-size: clamp(15px, 4.2vw, 18px);
     max-width: 600px;
     color: var(--text-secondary);
     line-height: 1.5;
@@ -199,7 +297,7 @@ body {
 
 .about-text {
     font-family: 'Consolas', ui-monospace, 'Noto Sans KR', monospace;
-    font-size: 23px;
+    font-size: clamp(17px, 4.8vw, 23px);
     line-height: 1.5;
     margin-bottom: 32px;
     color: var(--accent);
@@ -314,24 +412,6 @@ body {
     }
 }
 
-/* Community */
-.community-list {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.community-entry h3 {
-    font-family: var(--font-serif);
-    font-size: 20px;
-    margin-bottom: 4px;
-}
-
-.community-entry p {
-    font-size: 13px;
-    color: var(--text-secondary);
-}
-
 /* Project Table */
 .project-table {
     display: flex;
@@ -368,6 +448,128 @@ body {
     text-align: right;
     color: var(--text-secondary);
     letter-spacing: 0.1em;
+}
+
+/* Archive (history + projects ledger) */
+.archive-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.archive-row {
+    display: grid;
+    grid-template-columns: 72px 1fr auto;
+    align-items: baseline;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    scroll-margin-top: 24px;
+    transition: all 0.3s ease;
+}
+
+a.archive-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+    padding-left: 10px;
+}
+
+.archive-row:target {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.ar-year {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.ar-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.ar-title {
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.ar-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.ar-tag {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Timeline -> archive anchor */
+.tl-archive-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 2px;
+    transition: color 0.3s ease;
+}
+
+.tl-archive-link:hover {
+    color: var(--text-primary);
+}
+
+/* Public GitHub repos */
+.repo-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.repo-item {
+    display: block;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+.repo-item:hover {
+    background: rgba(255, 255, 255, 0.02);
+    padding-left: 10px;
+}
+
+.repo-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.repo-name {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    color: var(--text-primary);
+    overflow-wrap: anywhere;
+}
+
+.repo-lang {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.repo-desc {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
 }
 
 /* Skill Flow */
@@ -413,14 +615,34 @@ body {
     .viewport {
         padding: 0 20px;
     }
+    .nav {
+        padding: 24px 0;
+    }
     .grid-section {
         grid-column: span 12;
     }
-    .hero-title {
-        font-size: 48px;
+    /* 12-col grid's gaps alone exceed narrow viewports — stack instead */
+    .editorial-grid {
+        display: block;
     }
-    .about-text {
-        font-size: 22px;
+    .hero {
+        margin: 48px 0 80px;
+    }
+    .hero-title {
+        font-size: clamp(34px, 12vw, 48px);
+    }
+    .project-row {
+        grid-template-columns: 48px 1fr auto;
+        gap: 8px;
+    }
+    .pr-title {
+        font-size: 16px;
+    }
+    .modal-overlay {
+        padding: 16px;
+    }
+    .modal-box {
+        max-height: 82vh;
     }
 }
 
@@ -471,7 +693,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 18px 24px;
+    padding: 8px 12px 8px 24px;
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
 }
@@ -484,13 +706,17 @@ body {
 }
 
 .modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
     background: none;
     border: none;
     color: var(--text-secondary);
     font-size: 22px;
     line-height: 1;
     cursor: pointer;
-    padding: 0 4px;
     transition: color 0.3s ease;
 }
 
@@ -594,7 +820,7 @@ body {
     font: inherit;
     font-size: 10px;
     letter-spacing: 0.1em;
-    padding: 6px 16px;
+    padding: 12px 20px;
     border-radius: 100px;
     cursor: pointer;
     transition: all 0.3s ease;

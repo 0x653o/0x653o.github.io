@@ -16,18 +16,15 @@
     <div class="viewport">
         <nav class="nav">
             <a href="/" class="nav-brand">Mu1aq</a>
-            <div class="nav-links">
+            <div class="nav-right">
                 <div class="lang-toggle">
                     <button id="lang-en" class="lang-btn active">EN</button>
                     <span class="sep">/</span>
                     <button id="lang-ko" class="lang-btn">KO</button>
                 </div>
-                <a href="/about/" class="nav-item">ABOUT</a>
-                <a href="#blog" id="blog-link" class="nav-item">BLOG</a>
-                <a href="/gpg" id="gpg-link" class="nav-item">GPG</a>
-                <a href="/discord" id="discord-link" class="nav-item">DISCORD</a>
-                <a href="#connect" id="connect-link" class="nav-item">CONNECT</a>
-                <a id="contact-link" href="#" class="nav-item circle-btn">CONTACT</a>
+                <button id="menu-btn" class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">
+                    <span></span><span></span><span></span>
+                </button>
             </div>
         </nav>
 
@@ -35,6 +32,22 @@
             <h1 id="hero-name-container" class="hero-title reveal">JunSeo <span class="italic">mu1aq</span></h1>
         </main>
     </div>
+
+    <!-- Sidebar navigation -->
+    <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+    <aside id="sidebar" class="sidebar" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true">
+        <div class="sidebar-header">
+            <button id="sidebar-close" class="sidebar-close" aria-label="Close menu">&times;</button>
+        </div>
+        <nav class="sidebar-links">
+            <a href="/about/" class="side-item">ABOUT</a>
+            <a href="#blog" id="blog-link" class="side-item">BLOG</a>
+            <a href="/gpg" id="gpg-link" class="side-item">GPG</a>
+            <a href="/discord" id="discord-link" class="side-item">DISCORD</a>
+            <a href="#connect" id="connect-link" class="side-item">CONNECT</a>
+            <a id="contact-link" href="#" class="side-item">CONTACT</a>
+        </nav>
+    </aside>
 
     <!-- Reusable Modal (blog / gpg / discord / connect) -->
     <div id="modal-overlay" class="modal-overlay" aria-hidden="true">

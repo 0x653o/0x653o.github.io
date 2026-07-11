@@ -16,18 +16,15 @@
     <div class="viewport">
         <nav class="nav">
             <a href="/" class="nav-brand">Mu1aq</a>
-            <div class="nav-links">
+            <div class="nav-right">
                 <div class="lang-toggle">
                     <button id="lang-en" class="lang-btn active">EN</button>
                     <span class="sep">/</span>
                     <button id="lang-ko" class="lang-btn">KO</button>
                 </div>
-                <a href="/about/" class="nav-item">ABOUT</a>
-                <a href="#blog" id="blog-link" class="nav-item">BLOG</a>
-                <a href="/gpg" id="gpg-link" class="nav-item">GPG</a>
-                <a href="/discord" id="discord-link" class="nav-item">DISCORD</a>
-                <a href="#connect" id="connect-link" class="nav-item">CONNECT</a>
-                <a id="contact-link" href="#" class="nav-item circle-btn">CONTACT</a>
+                <button id="menu-btn" class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">
+                    <span></span><span></span><span></span>
+                </button>
             </div>
         </nav>
 
@@ -68,22 +65,28 @@
                     <div id="interests-container" class="skill-flow"></div>
                 </section>
 
-                <!-- Community Section -->
-                <section class="grid-section reveal">
-                    <h2 id="label-community" class="grid-label">COMMUNITY</h2>
-                    <div id="community-container" class="community-list"></div>
-                </section>
-
                 <!-- Project List -->
                 <section class="grid-section projects reveal">
-                    <h2 id="label-works" class="grid-label">SELECTED_WORKS</h2>
+                    <h2 id="label-works" class="grid-label">PROJECTS</h2>
                     <div id="projects-container" class="project-table"></div>
+                </section>
+
+                <!-- Archive: unified ledger of history + projects -->
+                <section class="grid-section reveal">
+                    <h2 id="label-archive" class="grid-label">ARCHIVE</h2>
+                    <div id="archive-container" class="archive-list"></div>
                 </section>
 
                 <!-- Tech Stack -->
                 <section class="grid-section reveal">
                     <h2 id="label-stack" class="grid-label">TECH_STACK</h2>
                     <div id="skills-container" class="skill-flow"></div>
+                </section>
+
+                <!-- Public GitHub repos (live from GitHub API) -->
+                <section class="grid-section reveal">
+                    <h2 id="label-repos" class="grid-label">PUBLIC_REPOS</h2>
+                    <div id="repos-container" class="repo-list"><p class="modal-empty">LOADING…</p></div>
                 </section>
             </div>
 
@@ -97,6 +100,22 @@
             </footer>
         </main>
     </div>
+
+    <!-- Sidebar navigation -->
+    <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+    <aside id="sidebar" class="sidebar" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true">
+        <div class="sidebar-header">
+            <button id="sidebar-close" class="sidebar-close" aria-label="Close menu">&times;</button>
+        </div>
+        <nav class="sidebar-links">
+            <a href="/about/" class="side-item">ABOUT</a>
+            <a href="#blog" id="blog-link" class="side-item">BLOG</a>
+            <a href="/gpg" id="gpg-link" class="side-item">GPG</a>
+            <a href="/discord" id="discord-link" class="side-item">DISCORD</a>
+            <a href="#connect" id="connect-link" class="side-item">CONNECT</a>
+            <a id="contact-link" href="#" class="side-item">CONTACT</a>
+        </nav>
+    </aside>
 
     <!-- Reusable Modal (blog / gpg / discord / connect) -->
     <div id="modal-overlay" class="modal-overlay" aria-hidden="true">

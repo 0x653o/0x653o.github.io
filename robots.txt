@@ -1,0 +1,70 @@
+# Block AI training / scraping crawlers
+
+# OpenAI
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: OAI-SearchBot
+Disallow: /
+
+# Anthropic
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: anthropic-ai
+Disallow: /
+
+# Google AI training (does not affect Google Search indexing)
+User-agent: Google-Extended
+Disallow: /
+
+# Meta
+User-agent: Meta-ExternalAgent
+User-agent: Meta-ExternalFetcher
+User-agent: FacebookBot
+Disallow: /
+
+# Apple AI training
+User-agent: Applebot-Extended
+Disallow: /
+
+# Perplexity
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+Disallow: /
+
+# Common Crawl (source of many AI training sets)
+User-agent: CCBot
+Disallow: /
+
+# ByteDance
+User-agent: Bytespider
+Disallow: /
+
+# Amazon
+User-agent: Amazonbot
+Disallow: /
+
+# Mistral
+User-agent: MistralAI-User
+Disallow: /
+
+# Cohere
+User-agent: cohere-ai
+User-agent: cohere-training-data-crawler
+Disallow: /
+
+# Misc AI / dataset crawlers
+User-agent: AI2Bot
+User-agent: Diffbot
+User-agent: omgili
+User-agent: omgilibot
+User-agent: Timpibot
+User-agent: ImagesiftBot
+User-agent: DuckAssistBot
+User-agent: YouBot
+User-agent: PanguBot
+Disallow: /
+
+# Everyone else (normal search engines) allowed
+User-agent: *
+Allow: /
