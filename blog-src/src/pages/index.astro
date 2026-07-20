@@ -1,0 +1,34 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+
+const base = import.meta.env.BASE_URL;
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+    (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const fmt = (d: Date) =>
+    d.toISOString().slice(0, 10);
+---
+
+<Base title="mu1aq — dev blog" ogType="website">
+    <p class="list-title">WRITING</p>
+    {posts.map((post) => (
+        <article class="post-card">
+            <h2><a href={`${base}/posts/${post.id}/`}>{post.data.title}</a></h2>
+            <div class="post-meta">
+                <span>{fmt(post.data.date)}</span>
+                <span>by {post.data.author}</span>
+                {post.data.tags.map((t) => <span class="tag">{t}</span>)}
+            </div>
+            {post.data.cover && (
+                <a class="cover" href={`${base}/posts/${post.id}/`} aria-hidden="true" tabindex="-1">
+                    <Image src={post.data.cover} alt="" width={1200} loading="lazy" />
+                </a>
+            )}
+            {post.data.description && <p class="excerpt">{post.data.description}</p>}
+            <a class="read-more" href={`${base}/posts/${post.id}/`}>Read more</a>
+        </article>
+    ))}
+</Base>

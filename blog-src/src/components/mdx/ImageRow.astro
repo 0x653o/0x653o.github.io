@@ -1,0 +1,30 @@
+---
+// Two (or more) images side by side. Children are markdown images
+// (each becomes a <p><img>) — the flex gap is the visible center split.
+interface Props {
+    gap?: string;
+}
+const { gap = '14px' } = Astro.props;
+---
+
+<div class="img-row" style={`--img-gap:${gap}`}><slot /></div>
+
+<style>
+    .img-row {
+        display: flex;
+        gap: var(--img-gap);
+        margin: 1.8em 0;
+        align-items: flex-start;
+    }
+    .img-row :global(> p),
+    .img-row :global(> figure) {
+        flex: 1 1 0;
+        min-width: 0;
+        margin: 0;
+    }
+    .img-row :global(img) {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+</style>

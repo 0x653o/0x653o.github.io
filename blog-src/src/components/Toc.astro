@@ -1,0 +1,24 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+    headings: MarkdownHeading[];
+}
+
+const items = Astro.props.headings.filter(
+    (h) => (h.depth === 2 || h.depth === 3) && h.slug !== 'footnote-label'
+);
+---
+
+{items.length > 1 && (
+    <details class="toc" open>
+        <summary>TABLE_OF_CONTENTS</summary>
+        <ul>
+            {items.map((h) => (
+                <li class={`depth-${h.depth}`}>
+                    <a href={`#${h.slug}`}>{h.text.replace(/#$/, '')}</a>
+                </li>
+            ))}
+        </ul>
+    </details>
+)}

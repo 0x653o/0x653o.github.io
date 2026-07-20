@@ -1,0 +1,48 @@
+---
+title: "Hello, /blog — 마크다운 기능 투어"
+date: 2026-07-10
+author: "mu1aq"
+tags: ["meta", "markdown"]
+description: "이 블로그가 렌더링할 수 있는 것들: 표, 체크박스, 각주, 인용, 이미지, 콜아웃."
+cover: "./cover.png"
+draft: false
+---
+
+import Callout from '../../../components/mdx/Callout.astro';
+
+포트폴리오와 같은 DNA(그레인·글로우·1px 보더)를 쓰는 터미널 톤 마크다운 블로그다.
+이 글은 기본 마크다운 기능이 의도대로 변환되는지 확인하는 데모를 겸한다.
+
+## 표 (GFM)
+
+| Layer | Target | Tooling |
+| ----- | ------ | ------- |
+| Web | logic bugs | BurpSuite |
+| Binary | memory corruption | GDB, pwntools |
+| Hardware | firmware | UART, binwalk |
+
+모바일에서는 표가 가로 스크롤된다.
+
+## 체크리스트
+
+- [x] Astro Content Collections 셋업
+- [x] expressive-code 코드 하이라이트
+- [ ] 첫 번째 실전 write-up 올리기
+
+## 인용과 각주
+
+> The quieter you become, the more you are able to hear.
+
+각주도 지원한다[^1]. 본문 하단에 모인다.
+
+[^1]: 이렇게 렌더링된다.
+
+## 콜아웃
+
+<Callout type="info">
+  MDX 컴포넌트는 `src/components/mdx/`에 모여 있다. 글에서 import해서 쓴다.
+</Callout>
+
+## 헤딩 앵커
+
+h2·h3에 마우스를 올리면 `#` 앵커가 나타나고, 상단 TOC에서 바로 점프할 수 있다.

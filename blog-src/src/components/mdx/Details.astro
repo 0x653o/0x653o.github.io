@@ -1,0 +1,42 @@
+---
+interface Props {
+    title?: string;
+}
+
+const { title = 'Details' } = Astro.props;
+---
+
+<details class="details-box">
+    <summary>{title}</summary>
+    <div class="details-body"><slot /></div>
+</details>
+
+<style>
+    .details-box {
+        margin: 1.6em 0;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        background: var(--bg-elevated);
+    }
+    .details-box summary {
+        padding: 12px 20px;
+        cursor: pointer;
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        color: var(--fg-muted);
+        user-select: none;
+    }
+    .details-box summary::marker {
+        color: var(--accent);
+    }
+    .details-box[open] summary {
+        border-bottom: 1px solid var(--border);
+        color: var(--fg);
+    }
+    .details-body {
+        padding: 16px 20px;
+    }
+    .details-body :global(> * + *) {
+        margin-top: 0.8em;
+    }
+</style>

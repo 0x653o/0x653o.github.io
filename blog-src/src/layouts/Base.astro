@@ -1,0 +1,190 @@
+---
+import '../styles/global.css';
+import { getCollection } from 'astro:content';
+
+interface Props {
+    title: string;
+    description?: string;
+    ogImage?: string | undefined;
+    ogType?: 'website' | 'article';
+}
+
+const {
+    title,
+    description = 'mu1aq dev blog — security research notes',
+    ogImage,
+    ogType = 'website',
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImageAbs = ogImage ? new URL(ogImage, Astro.site).href : undefined;
+
+// post list for the drawer (every page gets it)
+const drawerPosts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+    (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+const here = Astro.url.pathname.replace(/\/$/, '');
+const dfmt = (d: Date) => d.toISOString().slice(0, 10);
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonical.href} />
+    {ogImageAbs && <meta property="og:image" content={ogImageAbs} />}
+    <meta name="twitter:card" content={ogImageAbs ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {ogImageAbs && <meta name="twitter:image" content={ogImageAbs} />}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@100;200;300;400;500;600&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+        rel="stylesheet"
+    />
+</head>
+<body>
+    <div class="grain-overlay"></div>
+    <div class="ambient-glow"></div>
+    <div class="wrap">
+        <header class="site-header">
+            <a class="site-logo" href={`${base}/`}>Mu1aq</a>
+            <div class="site-nav">
+                <a href="/about/">ABOUT</a>
+                <button
+                    id="posts-btn"
+                    class="posts-btn"
+                    aria-label="글 목록 열기"
+                    aria-expanded="false"
+                    aria-controls="posts-drawer"
+                >
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </header>
+
+        <div id="drawer-overlay" class="drawer-overlay" aria-hidden="true"></div>
+        <aside id="posts-drawer" class="drawer" role="dialog" aria-modal="true" aria-label="글 목록" aria-hidden="true">
+            <div class="drawer-head">
+                <span class="drawer-title">POSTS</span>
+                <button id="drawer-close" class="drawer-close" aria-label="닫기">&times;</button>
+            </div>
+            <nav class="drawer-list">
+                <a href={`${base}/`} class={here === base ? 'active' : ''}>
+                    <span class="d-date">index</span>
+                    <span class="d-title">All posts</span>
+                </a>
+                {drawerPosts.map((post) => {
+                    const url = `${base}/posts/${post.id}`;
+                    return (
+                        <a href={`${url}/`} class={here === url ? 'active' : ''}>
+                            <span class="d-date">{dfmt(post.data.date)}</span>
+                            <span class="d-title">{post.data.title}</span>
+                        </a>
+                    );
+                })}
+            </nav>
+        </aside>
+        <main>
+            <slot />
+        </main>
+        <footer class="site-footer">
+            <span>&copy; {new Date().getFullYear()} mu1aq</span>
+            <span>FOR_THE_DEEP_DIVE</span>
+        </footer>
+    </div>
+
+    <script>
+        // Post-list drawer (hamburger → right slide-in, matches the portfolio).
+        (() => {
+            const btn = document.getElementById('posts-btn');
+            const drawer = document.getElementById('posts-drawer');
+            const overlay = document.getElementById('drawer-overlay');
+            const closeBtn = document.getElementById('drawer-close');
+            if (!btn || !drawer || !overlay || !closeBtn) return;
+            let lastFocus: HTMLElement | null = null;
+
+            const open = () => {
+                lastFocus = document.activeElement as HTMLElement;
+                drawer.classList.add('open');
+                overlay.classList.add('open');
+                drawer.setAttribute('aria-hidden', 'false');
+                btn.setAttribute('aria-expanded', 'true');
+                document.body.style.overflow = 'hidden';
+                requestAnimationFrame(() => requestAnimationFrame(() => closeBtn.focus()));
+            };
+            const close = () => {
+                drawer.classList.remove('open');
+                overlay.classList.remove('open');
+                drawer.setAttribute('aria-hidden', 'true');
+                btn.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+                lastFocus?.focus();
+            };
+
+            btn.addEventListener('click', open);
+            closeBtn.addEventListener('click', close);
+            overlay.addEventListener('click', close);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && drawer.classList.contains('open')) {
+                    close();
+                    return;
+                }
+                if (e.key !== 'Tab' || !drawer.classList.contains('open')) return;
+                const f = drawer.querySelectorAll<HTMLElement>('a[href], button:not([disabled])');
+                if (!f.length) return;
+                const first = f[0], last = f[f.length - 1];
+                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+                else if (!drawer.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+            });
+        })();
+
+        // Notion-style heading link: click the anchor → copy full URL + toast.
+        document.querySelectorAll('.prose .heading-anchor').forEach((a) => {
+            const anchor = a as HTMLAnchorElement;
+            anchor.addEventListener('click', (e) => {
+                e.preventDefault();
+                const hash = anchor.getAttribute('href') || '';
+                history.replaceState(null, '', hash);
+                const url = location.origin + location.pathname + hash;
+                navigator.clipboard?.writeText(url).catch(() => {});
+                anchor.setAttribute('data-copied', '1');
+                setTimeout(() => anchor.removeAttribute('data-copied'), 1200);
+            });
+        });
+
+        // Scroll-spy: highlight the current section in the floating rail
+        // (the in-content .toc box stays jump-only).
+        const tocLinks = [...document.querySelectorAll<HTMLAnchorElement>('.toc-rail a')];
+        if (tocLinks.length) {
+            const byEl = new Map<Element, HTMLAnchorElement>();
+            tocLinks.forEach((a) => {
+                const id = decodeURIComponent((a.getAttribute('href') || '').slice(1));
+                const el = id && document.getElementById(id);
+                if (el) byEl.set(el, a);
+            });
+            const obs = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (!entry.isIntersecting) return;
+                        tocLinks.forEach((l) => l.classList.remove('active'));
+                        byEl.get(entry.target)?.classList.add('active');
+                    });
+                },
+                { rootMargin: '0px 0px -78% 0px', threshold: 0 }
+            );
+            byEl.forEach((_, el) => obs.observe(el));
+        }
+    </script>
+</body>
+</html>
