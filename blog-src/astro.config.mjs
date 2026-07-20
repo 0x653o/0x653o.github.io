@@ -42,9 +42,9 @@ export default defineConfig({
       [
         rehypeAutolinkHeadings,
         {
-          behavior: 'append',
-          properties: { className: ['heading-anchor'], ariaLabel: 'Link to heading' },
-          content: { type: 'text', value: '#' },
+          // wrap the heading text itself in the anchor — no visible "#"
+          behavior: 'wrap',
+          properties: { className: ['heading-link'] },
         },
       ],
     ],

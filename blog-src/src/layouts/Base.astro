@@ -149,13 +149,13 @@ const dfmt = (d: Date) => d.toISOString().slice(0, 10);
             });
         })();
 
-        // Notion-style heading link: click the anchor → copy full URL + toast.
-        document.querySelectorAll('.prose .heading-anchor').forEach((a) => {
+        // Click a heading (its text is the anchor) → set the hash + copy the
+        // section URL to the clipboard, then flash a small toast.
+        document.querySelectorAll('.prose .heading-link').forEach((a) => {
             const anchor = a as HTMLAnchorElement;
-            anchor.addEventListener('click', (e) => {
-                e.preventDefault();
+            anchor.addEventListener('click', () => {
+                // native anchor already sets location.hash + scrolls
                 const hash = anchor.getAttribute('href') || '';
-                history.replaceState(null, '', hash);
                 const url = location.origin + location.pathname + hash;
                 navigator.clipboard?.writeText(url).catch(() => {});
                 anchor.setAttribute('data-copied', '1');

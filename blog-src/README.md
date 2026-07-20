@@ -124,7 +124,9 @@ Empty (`[]`) or omitted = no chips.
 Use `##` / `###` for sections. From them the blog auto-builds:
 - an **in-content TOC box** at the top (click to jump; `###` tab-indented),
 - a **floating right-side rail** (Notion-style: scroll-spy + hover-to-expand),
-- a `#` **link on hover** over each heading — clicking copies that section's URL.
+- **the heading text itself is a link** — click it to copy that section's URL
+  (the address bar updates to `…#slug`). No `#` glyph; a short "link copied"
+  toast confirms it.
 
 `#` (h1) is reserved for the post title — don't use it in the body.
 
@@ -137,9 +139,9 @@ Floating right rail — collapsed (lines only) and hovered (labels expand):
 ![TOC rail collapsed](docs/img/rail-collapsed.png)
 ![TOC rail hovered](docs/img/rail-hover.png)
 
-Hover link on a heading (click = copy section URL):
+Click a heading → copies its URL, shows a toast:
 
-![heading hover link](docs/img/heading-link.png)
+![heading click-to-copy toast](docs/img/heading-link.png)
 
 ### Text, lists, quotes
 

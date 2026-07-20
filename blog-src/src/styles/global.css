@@ -607,59 +607,40 @@ a:hover {
     font-size: 19px;
 }
 
-/* Notion-style hover link: reveals a link glyph, click copies the URL */
+/* Click the heading text itself → copy its section URL (no "#" glyph) */
 .prose :is(h2, h3, h4) {
     position: relative;
 }
 
-.heading-anchor {
-    position: absolute;
-    left: -1.3em;
-    top: 0;
-    width: 1.1em;
-    text-align: center;
-    font-family: var(--font-mono);
-    font-size: 0.7em;
-    line-height: inherit;
-    color: var(--fg-muted);
-    opacity: 0;
-    transition: opacity 0.2s ease, color 0.2s ease;
+.heading-link {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+    transition: opacity 0.2s ease;
 }
 
-.prose :is(h2, h3, h4):hover .heading-anchor,
-.heading-anchor:focus-visible {
-    opacity: 1;
-}
-
-.heading-anchor:hover {
-    color: var(--accent);
+.heading-link:hover {
+    color: inherit;
+    opacity: 0.68;
 }
 
 /* "copied" toast on click */
-.heading-anchor[data-copied]::after {
+.heading-link[data-copied]::after {
     content: 'link copied';
     position: absolute;
-    left: 50%;
-    top: -1.7em;
-    transform: translateX(-50%);
+    left: 0;
+    top: -1.6em;
     white-space: nowrap;
     font-family: var(--font-sans);
     font-size: 9px;
+    font-style: normal;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--bg);
     background: var(--accent);
     padding: 3px 7px;
     border-radius: 2px;
-    opacity: 1;
-}
-
-@media (max-width: 640px) {
-    /* no hover on touch — keep anchors always faintly visible */
-    .heading-anchor {
-        left: -1em;
-        opacity: 0.35;
-    }
 }
 
 .prose p,
