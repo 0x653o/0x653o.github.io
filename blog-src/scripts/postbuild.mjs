@@ -2,8 +2,8 @@
 // Astro builds into blog-src/dist (gitignored); this copies that fresh output
 // into the committed ../blog. Because it runs only on success, a failed build
 // can never wipe the published site. It also strips inert content-layer
-// artifacts and writes the repo-root .nojekyll + the in-folder README.
-import { rm, cp, writeFile, copyFile } from 'node:fs/promises';
+// artifacts and writes the repo-root .nojekyll.
+import { rm, cp, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 const dist = new URL('../dist/', import.meta.url); // blog-src/dist
@@ -22,8 +22,5 @@ for (const name of strays) {
 // repo-root .nojekyll so Pages serves the _astro/ assets
 await writeFile(new URL('../.nojekyll', out), '');
 
-// authoring/deploy guide inside the published folder
-await copyFile(new URL('../blog-readme.md', import.meta.url), new URL('README.md', out));
-
-console.log('postbuild: copied dist -> blog, stripped strays, wrote .nojekyll + blog/README.md');
+console.log('postbuild: copied dist -> blog, stripped strays, wrote .nojekyll');
 console.log('  output:', fileURLToPath(out));
