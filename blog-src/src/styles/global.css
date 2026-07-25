@@ -287,6 +287,12 @@ a:hover {
 }
 
 /* ---------- post list (home) ---------- */
+.post-empty {
+    padding: 48px 0;
+    color: var(--fg-muted);
+    font-size: 15px;
+}
+
 .post-card {
     padding: 44px 0;
     border-bottom: 1px solid var(--border);

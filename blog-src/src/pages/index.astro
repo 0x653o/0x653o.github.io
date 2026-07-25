@@ -14,6 +14,7 @@ const fmt = (d: Date) =>
 
 <Base title="mu1aq — dev blog" ogType="website">
     <p class="list-title">WRITING</p>
+    {posts.length === 0 && <p class="post-empty">아직 글이 없습니다.</p>}
     {posts.map((post) => (
         <article class="post-card">
             <h2><a href={`${base}/posts/${post.id}/`}>{post.data.title}</a></h2>

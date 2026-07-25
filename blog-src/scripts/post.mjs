@@ -43,8 +43,10 @@ const [cmd, arg] = process.argv.slice(2);
 if (cmd === 'list') {
   const rows = [];
   for (const f of await walk(POSTS)) {
+    const slug = slugOf(f);
+    if (slug.startsWith('_')) continue; // hidden keep-alive placeholder(s)
     const c = await readFile(POSTS + f, 'utf8');
-    rows.push({ slug: slugOf(f), date: fm(c, 'date'), draft: fm(c, 'draft') === 'true', title: fm(c, 'title'), file: f });
+    rows.push({ slug, date: fm(c, 'date'), draft: fm(c, 'draft') === 'true', title: fm(c, 'title'), file: f });
   }
   rows.sort((a, b) => (a.date < b.date ? 1 : -1));
   console.log(`${rows.length} post(s):`);
@@ -61,6 +63,7 @@ if (cmd === 'list') {
   console.log('edit it, then:  npm run build');
 } else if (cmd === 'rm') {
   if (!arg) { console.error('usage: post rm <slug>'); process.exit(1); }
+  if (arg.startsWith('_')) { console.error(`"${arg}" is a keep-alive placeholder — do not delete it`); process.exit(1); }
   const target = resolve(arg);
   if (!target) { console.error(`no post "${arg}" (see: npm run posts)`); process.exit(1); }
   await rm(POSTS + target, { recursive: true, force: true });
