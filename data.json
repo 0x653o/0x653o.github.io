@@ -7,7 +7,7 @@
             "role": "Student",
             "location": "SEOUL / KR",
             "bio": "Studying the deep architecture of complex systems to discover logic bugs and memory corruption. Also studying Red team operation.",
-            "status": "Sejong Univ. Sophomore / Researching Internals"
+            "status": "Sejong Univ. Sophomore"
         },
         "about": {
             "title": "ABOUT",
@@ -16,13 +16,13 @@
         "affiliations": [
             "Cyb3rPunk!",
             "SSG (Security . Security . Group)",
-            "Red Cat (Red Team)"
+            "Red Cat (Red Teamming focus research team)"
         ],
         "timeline": [
             {
-                "year": "DEF CON 34",
-                "event": "CTF Finalist",
-                "detail": "CTF Finals — Jinddabi's team"
+                "year": "2026",
+                "event": "DEF CON 34 CTF Finalist",
+                "detail": "CTF Quals 6th — Jinddabi's team"
             },
             {
                 "year": "2026 ~ ",
@@ -53,13 +53,14 @@
             { "year": "2026", "title": "IPCam Research", "tag": "HARDWARE, Android", "link": "https://github.com/2025-SSG-Embbeded-Project/IpCam-Vuln-Analysis", "group": "ipcam" },
             { "year": "2026", "title": "Web3 BugBounty", "tag": "DEFI, ETH", "link": "https://github.com/SSG-web3-BugBounty-Project-ETH/web3_BugBounty_Project_ETH", "group": "web3" }
         ],
+        "cves": ["CVE-2026-26484", "CVE-2026-26485", "CVE-2026-26486", "CVE-2026-26487", "CVE-2026-26488"],
         "links": [
             { "platform": "GitHub", "url": "https://github.com/mu1aq", "label": "@mu1aq" },
             { "platform": "X", "url": "https://x.com/mu1aq_", "label": "@mu1aq_" },
             { "platform": "Instagram", "url": "https://instagram.com/tlswnstj_s.j.s", "label": "@tlswnstj_s.j.s" },
             { "platform": "Signal", "url": "https://signal.me/#eu/TP81vnXy5VKjrKmOGD7MNlr_-k8brGmvRJVOV-Rg_s9ztCKDlZNNc7ZIWGPDsFJy", "label": "@mu1aq" }
         ],
-        "skills": ["Python", "C/C++", "JavaScript" , "GDB", "IDA", "BurpSuite", "pwntools", "OSINT"],
+        "skills": ["Python", "C/C++", "JavaScript" , "GDB", "IDA", "BurpSuite", "pwntools", "OSINT", "ADB"],
         "blogs": [
             { "platform": "Dev Blog", "handle": "mu1aq.github.io/blog", "url": "/blog/" },
             { "platform": "Tistory", "handle": "653o.tistory.com", "url": "https://653o.tistory.com/" },
@@ -77,7 +78,9 @@
             "gpg": "GPG PUBLIC KEY",
             "discord": "DISCORD",
             "archive": "ARCHIVE",
-            "repos": "PUBLIC_REPOS"
+            "repos": "PUBLIC_REPOS",
+            "cve": "CVE",
+            "cveNote": "IPCam Embedded Project"
         }
     },
     "ko": {
@@ -101,14 +104,14 @@
         ],
         "timeline": [
             {
-                "year": "DEF CON 34",
-                "event": "CTF Finalist",
-                "detail": "CTF Finals — Jinddabi's team"
+                "year": "2026",
+                "event": "DEF CON 34 CTF Finalist",
+                "detail": "CTF Quals 6th — Jinddabi's team"
             },
             {
                 "year": "2026 ~ ",
                 "event": "WhiteHat School 4th (KISA)",
-                "detail": "교육생 최종합격 / 수료 중"
+                "detail": "수료 중"
             },
             {
                 "year": "2026",
@@ -118,7 +121,7 @@
             {
                 "year": "2025 - 2026",
                 "event": "IPCam Vulnerability Analysis Research",
-                "detail": "SSG Embedded Project / 안드로이드 보안",
+                "detail": "SSG Embedded Project / 안드로이드 파트 담당",
                 "group": "ipcam"
             },
             {
@@ -134,6 +137,7 @@
             { "year": "2026", "title": "IPCam Research", "tag": "HARDWARE, Android", "link": "https://github.com/2025-SSG-Embbeded-Project/IpCam-Vuln-Analysis", "group": "ipcam" },
             { "year": "2026", "title": "Web3 BugBounty", "tag": "DEFI, ETH", "link": "https://github.com/SSG-web3-BugBounty-Project-ETH/web3_BugBounty_Project_ETH", "group": "web3" }
         ],
+        "cves": ["CVE-2026-26484", "CVE-2026-26485", "CVE-2026-26486", "CVE-2026-26487", "CVE-2026-26488"],
         "links": [
             { "platform": "GitHub", "url": "https://github.com/mu1aq", "label": "@mu1aq" },
             { "platform": "X", "url": "https://x.com/mu1aq_", "label": "@mu1aq_" },
@@ -158,7 +162,9 @@
             "gpg": "GPG PUBLIC KEY",
             "discord": "DISCORD",
             "archive": "ARCHIVE",
-            "repos": "PUBLIC_REPOS"
+            "repos": "PUBLIC_REPOS",
+            "cve": "CVE",
+            "cveNote": "IPCam 임베디드 프로젝트"
         }
     },
     "gpg": "-----BEGIN PGP PUBLIC KEY BLOCK-----\n\nmDMEaVOFMhYJKwYBBAHaRw8BAQdAWac0DI/fI+KSnnMHswEijccbuSNvXyvBMbrS\n/hhH1gS0HzY1M28gPHMuai5zLnRsc3duc3RqQGdtYWlsLmNvbT6ImQQTFgoAQRYh\nBPAqY702e/d9vYINHRwdWcTKy1iYBQJpU4UyAhsDBQkFo5qABQsJCAcCAiICBhUK\nCQgLAgQWAgMBAh4HAheAAAoJEBwdWcTKy1iY5nwBAIlQmCajDXr6kjdaS07BIywW\nr43+qzcwwJkfe2NOT/h5AQDtH+7Np3efp8x+spKrRUls9iGBXwT0+ehjkrr4N8sN\nArg4BGlThTISCisGAQQBl1UBBQEBB0AKkhzjU/rQXhOmxD2iY78rrEG0p2ecphXJ\nqAKe5v0uPQMBCAeIfgQYFgoAJhYhBPAqY702e/d9vYINHRwdWcTKy1iYBQJpU4Uy\nAhsMBQkFo5qAAAoJEBwdWcTKy1iYN44BANjqVukncd9rTZ8OZD0xu5h4hHTWwQLo\nN53YKXo3Iq34AP9XtzxHCVP9ur9Qvkh12e793yoGJe/BtK3G8gUj/B3sD5kCDQRp\nVTZPARAAyepF1P0lSGwb1inm+yptKh9J93LEmIgVTNiHPmwYIV72lr+v5yA2FWgp\nhOcxYGa2C6z2/RwJTAtKsBv25TOA/ZrnJnOUvibdDu5MHFQv714sOu4sjJ+tCn0S\nvjSDAPNxGQ8z81HcLc1np5sQBldP/AGlaWL9T0lIIQI/Xig2iXanb/CmjKYb1DW3\ntGlepNhyJI94fhPoq5fWkpkhAKkJwVP2zs80aA9obE64YYCflCC3w218s6OLIHuo\nL8pTDUJn2EiMkRtrN8UbEtEuTh8mkBBhB6xcolwKwnHVr+xI/kk5mOo8MLxudYEP\ntph72fSsRmzYsMPfQphMPKgLRfzUgTayIZK+CbePozHo+JEAJ+DTof98UamIX9Ts\nEn8uApzc/rbmEOukQfc2QtNTMWxX3qLnQ6EuXK2bdqVjJzAWP15ihkYtc6zM0fB1\nh67GEJSosQY1wBHYnEXozsfazNUPLwYCM5fOGln3HzUjnWjgWoPO3zThe1/XKb8l\n0a6E1764dabXiyTO/y8Nu1QxHErG/dHOLwey5wloPJeEyat1UX/dB9fJdY6V/yRp\niyJNc+Poylsp4YQlqJMWltmz4JwlJxYN/l1GyiviOi5ImQ9i7gB9uzm8MmOcb0jR\n/bQKMzxPdEiXrnJNKYB/7F9Or/TAm5xj2F8ZrNbwt99kDCKntfMAEQEAAbQfNjUz\nbyA8cy5qLnMudGxzd25zdGpAZ21haWwuY29tPokCVwQTAQoAQRYhBIAYfpyoSB01\nlLqtEybZosCk5npbBQJpVTZPAhsDBQkDwmcABQsJCAcCAiICBhUKCQgLAgQWAgMB\nAh4HAheAAAoJECbZosCk5npb9lEQAI+0vplSlz7modmem/KjjToa+UqrQCSxIS/8\nnPglY5guRtmrxuWQeMTf20LR2RKpHX8H4PlG1L6Czabr42opq2Fle5AyR0n6POzH\nVU3oQSaC3kOwzVnRdlhyxl8GPYPti4hx+cr66COAMjzPLfrnEnAUlQng/gO6ln5r\nPYmBa9gqKjixEq4NsZ+kcMF/dJ4KVNjHQY+TuJ67B7G5Gi1avxoY8Z15Gx6GJRij\nokHosVLwo2TkyyaunlOXro7l+ufLhTJYLNzFQKG9w7Cw7R7eUEHJLcitNQ7bQabl\nFSpM5Zegi/DyFge8zad07SpAo3Lx8srOoXVYOpE1ee50FG52Xe02NqROeIbTSaIy\nVBMOc9IsiM++yqlvGTuQzvEbsV2/kVUJmhMMw3MEhlOEuh7+DDXSKngPDxXRz744\n4AguYdZ0f0Ecff9HYvkASDrgbfj5qRkAQ25M+aWJBEcGS1sYoiHHgs+pJyCs1Bcw\n5NgZkrLRQJrar2F8UbiwOB92kZLlcLAKUeleF4FCQYaujewHjtx/wHLywIco/2YI\n3RZNQpS5v4KCSh95uN2IlVrl0l0uiVPS2fkAlKS8C/4r+AeYVIHbtZwa+h+mbiv9\n3ISvGCnJnpVCUbM4KNKq+bEVRJ7p4C7eq5FU0SsVzPR5b4cJNYpEqUGVOo7rsOqN\nbtA1sNBSuQINBGlVNk8BEADCgGXSX9iUZjeXGbADuGo0dn0IBw8wZ+z1ig+RbsPF\nz7aL/31u98abOYN4KM6tpumzvuUeAuu/o8MHa8GCWTCLkYN8AnHb9xN199ptp512\nY2tn4RyAAO/VBzu5NisYqU74axYTX1gKLEn7Fb0c+HUxsUX+tLwygcVOfCaOBw5Y\n1PRgHnX6H73HfOm3xL+/D3P//epWy5Sav0D+h5xvmsFXnyceDTw+kW1k/502QVhg\no27+IoJE1xmy/bQKz+1XuBASQtOl2GJ59V5iBivrTU0HFg5HC5/oqZAQFrQLZxFF\nqRUiGG5QS0GCIAJsSLgGDcOVyGPaLMYzvDpqLj4etRfGLoxUrb/MwmwVBV48XCtn\nquSaq8fH5f54Zt7bKHkzsMytuvjfh2u0JNdfZY2QzuTCweaaHDV4CqLX1KsB/qMc\nCDeU5iAU3BJ7Eu235HUHpS2cT9LwZSMQ1mWQXvIYMoFlP0uiZ53mpY9QjCx6wjwm\nbVHXKjkfJnYNdlzZqt6JWLi5aRetbCxLTDcexb5KOW7UDemsgU1DUUX2KNna4PsA\n+5HrH8aPMofHFqcjgPX3EqrPQiOhFi6MK0fRo1j28Im+4Xks8I9Ud4iuxuBGEB5l\nrfab8j52i13C2Kt+t0GwdJtddcVY3kjsdvOoiQpB2piyUNdzJ1FEZQNoqDMLbRXw\nnwARAQABiQI8BBgBCgAmFiEEgBh+nKhIHTWUuq0TJtmiwKTmelsFAmlVNk8CGwwF\nCQPCZwAACgkQJtmiwKTmelvEMhAAyLHurHm7ofnEFvlq0rKPIJOramA/P21sPuBm\nPV1L0UeKicP8dafzxa9D1D8IuSqrleSQBBjrTfdoYa+2sg9v8vOeGAxeuu5OI5BQ\nL143wNEKgH3gPd7vEF3F1thomUcgCvfkkTztkplFFEWA5wUunxk38gEuTzbrN9o2\nHBWugZ1OkzeCI9Ii6iP1XDAbDAegBE9hOX2RXNicnD2lLyo5JkjMcN5FF7q6NyZh\n8asf+O6LsKBFFwbWJY/2rh7J8klju12WH8zOGPsVrTsCks4u5s4otWrgv0zInNcp\ncfNlXhFUaMxZIciP2schsbQ9gSNk+zKAadH5WXMME+uztgkCHXV6EXKPfE8IERSf\nG0hM66PqQICSffhIxTXRYXL4zKV1t9t9n8gNT3a/SlXJb3CMzStrIVyVUmWy+04Q\nbuJcQx15cYp4XZ2VH5iPoqRzErlgrksWnEPjAqOZ1ZTwP7QuNWxFQbd4HMhz45OG\nKa5ZAeVKKWGvFrCQukWY3ywDmHaHzBr6uAc4F3jR7/o0wOE/MypSDXk79ieiVdTC\n0o2cpwBTA8z4YOgLrbgBjXGNG4PxE3An0LGEF1+5kzG2WBM7b1MByoVg8+BzYAnY\nhrSpZKnMlZSglPI9x6YAPt5KfwjFJbhsUfkIHtYJBdK2V1WHPt7VMW3AS1SCpZrA\nOpX4nVQ=\n=m2SM\n-----END PGP PUBLIC KEY BLOCK-----",

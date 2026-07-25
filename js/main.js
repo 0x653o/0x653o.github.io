@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setText('label-stack', data.labels.stack);
         setText('label-archive', data.labels.archive);
         setText('label-repos', data.labels.repos);
+        setText('label-cve', data.labels.cve);
 
         // Content
         setText('about-text', data.about.content);
@@ -99,6 +100,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="pr-tag">${item.tag}</span>
             </a>
         `);
+
+        // Disclosed CVEs (from the IPCam embedded project)
+        renderCves(data);
 
         // Skills
         renderList('skills-container', data.skills, (item) => `<span>${item}</span>`);
@@ -160,6 +164,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? `<a id="archive-${r.id}" class="archive-row" href="${r.link}" target="_blank" rel="noopener">${inner}</a>`
                 : `<div id="archive-${r.id}" class="archive-row">${inner}</div>`;
         }).join('');
+    }
+
+    // ---- Disclosed CVEs (linked to cve.org records) ----
+    function renderCves(data) {
+        const container = document.getElementById('cve-container');
+        if (!container) return;
+        const cves = data.cves || [];
+        if (!cves.length) { container.innerHTML = ''; return; }
+        const ipcam = (data.projects || []).find((p) => p.group === 'ipcam');
+        const note = (data.labels && data.labels.cveNote) || '';
+        const noteHtml = note
+            ? (ipcam && ipcam.link
+                ? `<a class="cve-note" href="${ipcam.link}" target="_blank" rel="noopener">${note} &#8599;</a>`
+                : `<span class="cve-note">${note}</span>`)
+            : '';
+        const chips = cves.map((id) =>
+            `<a class="cve-item" href="https://www.cve.org/CVERecord?id=${encodeURIComponent(id)}" target="_blank" rel="noopener">${id} &#8599;</a>`
+        ).join('');
+        container.innerHTML = `${noteHtml}<div class="cve-chips">${chips}</div>`;
     }
 
     // ---- Public GitHub repos (live, unauthenticated API) ----

@@ -524,6 +524,49 @@ a.archive-row:hover {
     color: var(--text-primary);
 }
 
+/* Disclosed CVEs */
+.cve-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.cve-note {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a.cve-note:hover {
+    color: var(--text-primary);
+}
+
+.cve-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.cve-item {
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 6px 12px;
+    transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+}
+
+.cve-item:hover {
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.02);
+}
+
 /* Public GitHub repos */
 .repo-list {
     display: flex;
