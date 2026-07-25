@@ -16,9 +16,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initRepos();
 
+    // Merge shared `common` content with the per-language `user`/`about`.
+    // Only user + about differ between EN/KO; everything else is shared.
+    function langData(lang) {
+        return Object.assign({}, globalData.common, globalData[lang] || {});
+    }
+
     function render(lang) {
-        const data = globalData[lang];
-        if (!data) return;
+        if (!globalData[lang]) return;
+        const data = langData(lang);
 
         // User Info
         setText('user-location', data.user.location);
@@ -354,7 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openBlogModal() {
-        const data = globalData[currentLang] || {};
+        const data = langData(currentLang);
         const blogs = data.blogs || [];
         const title = (data.labels && data.labels.blogs) || 'BLOG';
         let body;
@@ -374,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openGpgModal() {
-        const data = globalData[currentLang] || {};
+        const data = langData(currentLang);
         const key = (globalData && globalData.gpg) || '';
         const title = (data.labels && data.labels.gpg) || 'GPG PUBLIC KEY';
         let body;
@@ -397,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openDiscordModal() {
-        const data = globalData[currentLang] || {};
+        const data = langData(currentLang);
         const dc = globalData.discord || {};
         const title = (data.labels && data.labels.discord) || 'DISCORD';
         const body = `
@@ -410,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openConnectModal() {
-        const data = globalData[currentLang] || {};
+        const data = langData(currentLang);
         const links = data.links || [];
         const title = (data.labels && data.labels.links) || 'CONNECT';
         const rows = links.map((l) => `
