@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && node scripts/postbuild.mjs",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "posts": "node scripts/post.mjs list",
+    "post": "node scripts/post.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.14",

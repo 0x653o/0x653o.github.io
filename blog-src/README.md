@@ -2,11 +2,12 @@
 
 Astro source for the terminal-editorial markdown blog served at
 **`https://mu1aq.github.io/blog`**. This folder (`blog-src/`) lives **inside the
-`mu1aq.github.io` repo** so posts are version-controlled. You build it into
-`../blog/` and commit both. No CI — build locally, commit, push.
+`mu1aq.github.io` repo** so posts are version-controlled. `npm run build`
+compiles into a throwaway `dist/`, then copies it into `../blog/`; commit both
+`blog/` and `blog-src/`. No CI — build locally, commit, push.
 
 `node_modules/`, `.astro/`, `dist/` are gitignored, so they never ship. GitHub
-Pages technically serves these source files too, but nothing links to them.
+Pages technically serves the `blog-src/` source too, but nothing links to it.
 
 ## Layout (inside the mu1aq.github.io repo)
 
@@ -15,10 +16,11 @@ mu1aq.github.io/              ← the repo (portfolio + blog)
   index.html, css/, data.json …   the portfolio
   blog/                       ← BUILD OUTPUT (committed & published; don't edit)
   blog-src/                   ← this folder (source, committed)
-    astro.config.mjs          base:'/blog', outDir → ../blog
+    astro.config.mjs          base:'/blog', outDir → dist (copied to ../blog)
+    dist/                     build output, gitignored (copied to ../blog on success)
     src/
       content.config.ts       post collection + frontmatter schema (zod)
-      content/posts/<slug>/    one folder per post (index.md|mdx + images)
+      content/posts/          posts: <slug>.mdx (flat) or <slug>/index.mdx (+images)
       layouts/Base.astro       header, drawer, footer, OG/Twitter meta
       pages/
         index.astro            /blog/  — post list, newest first
@@ -26,7 +28,8 @@ mu1aq.github.io/              ← the repo (portfolio + blog)
       components/              Toc, TocRail, mdx/ (Callout/Tabs/Details/Video/ImageRow)
       plugins/remark-reading-time.mjs
       styles/global.css        the whole theme (CSS variables at top)
-    scripts/postbuild.mjs      strips strays, writes .nojekyll + blog/README.md
+    scripts/postbuild.mjs      copies dist → ../blog (on success) + .nojekyll + README
+    scripts/post.mjs           post CLI: list / new / rm
 ```
 
 ## Quick start
@@ -39,13 +42,35 @@ npm run dev          # preview at http://localhost:4321/blog/
 
 `base:'/blog'` is honored in dev — always browse under `/blog/`, not `/`.
 
+## Manage posts (CLI)
+
+Posts live in `src/content/posts/`, **not** in `blog/` — deleting a folder under
+`blog/` does nothing, the next build regenerates it. Manage them from the source
+with these commands (run in `blog-src/`):
+
+```bash
+npm run posts                 # list every post (date, slug, title, [draft])
+npm run post -- new <slug>    # scaffold src/content/posts/<slug>.mdx
+npm run post -- rm  <slug>    # delete the post (file or folder) + rebuild blog/
+```
+
+`rm` finds the post whether it's a flat `<slug>.mdx` or a `<slug>/` folder,
+deletes it, and rebuilds so it's immediately gone from `blog/`. (Without the npm
+`--`, the same thing: `node scripts/post.mjs <list|new|rm> <slug>`.)
+
 ## Write a new post
 
-1. Make a folder + file: `src/content/posts/<slug>/index.md`
-   (or `index.mdx` if you want components — callouts, tabs, side-by-side images…).
-2. **One folder = one post.** The folder name is the URL slug →
-   `/blog/posts/<slug>/`. Never put two `index` files in one folder.
-3. Put the post's images in that same folder and reference them relatively.
+Two layouts, both give `/blog/posts/<slug>/`:
+
+1. **Flat file** — `src/content/posts/<slug>.mdx` (or `.md`). The filename is
+   the slug. Simplest; use for text-only posts.
+2. **Folder** — `src/content/posts/<slug>/index.mdx` + images in that folder,
+   referenced relatively (`./cover.png`). Use this only when the post has local
+   images that should sit next to it.
+
+Use `.mdx` (not `.md`) when you want components — callouts, tabs, side-by-side
+images. `title` and `date` in the frontmatter are required; a missing/invalid
+frontmatter fails the build (which is safe — see Deploy).
 
 ### Frontmatter (top of every post, between `---`)
 
@@ -337,7 +362,7 @@ Prev / next at the bottom of each post:
 
 ```bash
 # from blog-src/
-npm run build        # → ../blog/  (+ .nojekyll, + blog/README.md, strips strays)
+npm run build        # → dist/ (gitignored), then postbuild copies it to ../blog/
 
 # from the repo root
 git add blog blog-src .nojekyll
@@ -346,6 +371,17 @@ git push             # pushing to main deploys
 ```
 
 Commit **both** `blog/` (published) and `blog-src/` (source + your new post).
+
+**Builds are safe.** Astro builds into a throwaway `dist/` (gitignored); postbuild
+copies it into the committed `blog/` **only on success**. A broken post (bad
+frontmatter, MDX typo) fails the build and leaves your published `blog/`
+untouched — it never gets wiped. Fix and rebuild. (If `blog/` ever does get lost,
+`git restore blog` brings it back.)
+
+A build regenerates the **whole** `blog/` from every post in
+`src/content/posts/` — it's a static-site generator, not an incremental add.
+Keep every post you want published in the source; deleting a source post drops
+it from the next build.
 
 ### `.nojekyll` — keep it
 

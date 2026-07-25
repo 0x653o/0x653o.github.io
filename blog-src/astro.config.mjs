@@ -11,7 +11,9 @@ import { remarkReadingTime } from './src/plugins/remark-reading-time.mjs';
 export default defineConfig({
   site: 'https://mu1aq.github.io',
   base: '/blog',
-  outDir: '../blog',
+  // Build into a throwaway dist/ (gitignored). postbuild copies it into the
+  // committed ../blog only on success, so a failed build never wipes the site.
+  outDir: 'dist',
   integrations: [
     // must come before mdx() so MDX code blocks get expressive-code frames
     expressiveCode({

@@ -12,10 +12,20 @@ Quick reference below.
 The blog is an Astro project in **`../blog-src`** (same repo). Write posts there,
 build, then commit both `blog/` and `blog-src/`.
 
-## New post
+## Manage posts
 
-`blog-src/src/content/posts/<slug>/index.md` (or `.mdx` for components). One
-folder = one post; folder name = URL slug (`/blog/posts/<slug>/`).
+Posts live in `blog-src/src/content/posts/` — **not** here in `blog/` (deleting a
+folder here does nothing; the build regenerates it). From `blog-src/`:
+
+```bash
+npm run posts                 # list posts
+npm run post -- new <slug>    # create src/content/posts/<slug>.mdx
+npm run post -- rm  <slug>    # delete a post (file or folder) + rebuild
+```
+
+A post is either a flat file `<slug>.mdx` (filename = slug) or a folder
+`<slug>/index.mdx` (for local images). Both → `/blog/posts/<slug>/`. Use `.mdx`
+for components; `title` + `date` are required.
 
 ```yaml
 ---

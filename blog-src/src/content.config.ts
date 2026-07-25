@@ -3,10 +3,12 @@ import { glob } from 'astro/loaders';
 
 const posts = defineCollection({
   loader: glob({
-    pattern: '**/index.{md,mdx}',
+    // Either a flat file — "my-post.mdx" (slug = my-post) — or a folder with
+    // "my-post/index.mdx" (slug = my-post; the folder lets images live next to
+    // the post). Both work; use a folder only when the post has local images.
+    pattern: '**/*.{md,mdx}',
     base: './src/content/posts',
-    // "my-post/index.mdx" -> id "my-post"
-    generateId: ({ entry }) => entry.replace(/\/index\.(md|mdx)$/, ''),
+    generateId: ({ entry }) => entry.replace(/\.(md|mdx)$/, '').replace(/\/index$/, ''),
   }),
   schema: ({ image }) =>
     z.object({
