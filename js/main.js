@@ -69,8 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="tl-item">
                     <div class="tl-left">
                         ${isEven ? `
-                            <div class="tl-year-large">${item.year}</div>
-                            <div class="tl-event-text">${item.event}</div>
+                            <div class="tl-event-large">${item.event}</div>
+                            <div class="tl-year-small">${item.year}</div>
                             ${archiveLink}
                         ` : `
                             <div class="tl-detail-text">${detail}</div>
@@ -79,8 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="tl-node"></div>
                     <div class="tl-right">
                         ${!isEven ? `
-                            <div class="tl-year-large">${item.year}</div>
-                            <div class="tl-event-text">${item.event}</div>
+                            <div class="tl-event-large">${item.event}</div>
+                            <div class="tl-year-small">${item.year}</div>
                             ${archiveLink}
                         ` : `
                             <div class="tl-detail-text">${detail}</div>
