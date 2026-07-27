@@ -7,7 +7,7 @@
 //   node scripts/post.mjs rm  <slug>
 //
 // (or via npm: `npm run posts`, `npm run post -- new <slug>`, `npm run post -- rm <slug>`)
-import { readdir, readFile, writeFile, rm } from 'node:fs/promises';
+import { readdir, readFile, writeFile, rm, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -55,11 +55,29 @@ if (cmd === 'list') {
   }
 } else if (cmd === 'new') {
   if (!arg) { console.error('usage: post new <slug>'); process.exit(1); }
+  if (arg.startsWith('_')) { console.error('slug cannot start with "_"'); process.exit(1); }
   if (resolve(arg)) { console.error(`post "${arg}" already exists`); process.exit(1); }
   const today = new Date().toISOString().slice(0, 10);
-  const tmpl = `---\ntitle: "${arg}"\ndate: ${today}\ntags: []\ndescription: ""\ndraft: false\n---\n\nWrite here.\n`;
-  await writeFile(`${POSTS}${arg}.mdx`, tmpl);
-  console.log(`created src/content/posts/${arg}.mdx  → /blog/posts/${arg}/`);
+  const dir = `${POSTS}${arg}/`;
+  // folder post: index.mdx + a dedicated images/ folder (.gitkeep so it commits empty)
+  await mkdir(`${dir}images/`, { recursive: true });
+  await writeFile(`${dir}images/.gitkeep`, '');
+  const tmpl = `---
+title: "${arg}"
+date: ${today}
+tags: []
+description: ""
+# cover: "./images/cover.png"   # 썸네일: 이미지를 images/ 에 넣고 이 줄 주석 해제
+draft: false
+---
+
+여기에 작성.
+
+{/* 이미지: images/ 폴더에 넣고  ![설명](./images/파일.png)  로 삽입 */}
+`;
+  await writeFile(`${dir}index.mdx`, tmpl);
+  console.log(`created src/content/posts/${arg}/index.mdx  → /blog/posts/${arg}/`);
+  console.log(`  images → src/content/posts/${arg}/images/   (reference as ./images/...)`);
   console.log('edit it, then:  npm run build');
 } else if (cmd === 'rm') {
   if (!arg) { console.error('usage: post rm <slug>'); process.exit(1); }
