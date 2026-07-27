@@ -65,6 +65,7 @@ if (cmd === 'list') {
   const tmpl = `---
 title: "${arg}"
 date: ${today}
+author: "mu1aq"
 tags: []
 description: ""
 # cover: "./images/cover.png"   # 썸네일: 이미지를 images/ 에 넣고 이 줄 주석 해제
