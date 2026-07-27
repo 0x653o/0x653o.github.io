@@ -1,0 +1,492 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Fuzzing101-&quot;What Is FUZZING??&quot; [ko] — mu1aq</title><meta name="description" content="Fuzzing의 개념에 대해서 설명하고 Fuzzing 101을 실습하기 위한 기초 환경 설정을 다룬다."><link rel="canonical" href="https://mu1aq.github.io/blog/posts/Fuzzing101-Explain_2_Setup/"><meta property="og:title" content="Fuzzing101-&#34;What Is FUZZING??&#34; [ko] — mu1aq"><meta property="og:description" content="Fuzzing의 개념에 대해서 설명하고 Fuzzing 101을 실습하기 위한 기초 환경 설정을 다룬다."><meta property="og:type" content="article"><meta property="og:url" content="https://mu1aq.github.io/blog/posts/Fuzzing101-Explain_2_Setup/"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Fuzzing101-&#34;What Is FUZZING??&#34; [ko] — mu1aq"><meta name="twitter:description" content="Fuzzing의 개념에 대해서 설명하고 Fuzzing 101을 실습하기 위한 기초 환경 설정을 다룬다."><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@100;200;300;400;500;600&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/blog/_astro/index.BPxoDn-8.css"></head> <body> <div class="grain-overlay"></div> <div class="ambient-glow"></div> <div class="wrap"> <header class="site-header"> <a class="site-logo" href="/blog/">Mu1aq</a> <div class="site-nav"> <a href="/about/">ABOUT</a> <button id="posts-btn" class="posts-btn" aria-label="글 목록 열기" aria-expanded="false" aria-controls="posts-drawer"> <span></span><span></span><span></span> </button> </div> </header> <div id="drawer-overlay" class="drawer-overlay" aria-hidden="true"></div> <aside id="posts-drawer" class="drawer" role="dialog" aria-modal="true" aria-label="글 목록" aria-hidden="true"> <div class="drawer-head"> <span class="drawer-title">POSTS</span> <button id="drawer-close" class="drawer-close" aria-label="닫기">&times;</button> </div> <nav class="drawer-list"> <a href="/blog/" class> <span class="d-date">index</span> <span class="d-title">All posts</span> </a> <a href="/blog/posts/Fuzzing101-Explain_2_Setup/" class="active"> <span class="d-date">2026-07-27</span> <span class="d-title">Fuzzing101-&quot;What Is FUZZING??&quot; [ko]</span> </a> </nav> </aside> <main>  <header class="post-header"> <h1>Fuzzing101-&quot;What Is FUZZING??&quot; [ko]</h1> <div class="post-meta"> <span>2026-07-27</span> <span>by mu1aq</span> <span>27 min read · 5251 words</span> <span class="tag">fuzzing</span><span class="tag">Fuzzing101</span> </div>  </header> <details class="toc" open><summary>TABLE_OF_CONTENTS</summary><ul><li class="depth-2"><a href="#1-퍼징이란-무엇인가">1. 퍼징이란 무엇인가</a></li><li class="depth-3"><a href="#1-1-이게-왜-효과가-있을까">1-1. 이게 왜 효과가 있을까?</a></li><li class="depth-3"><a href="#1-2-퍼저의-분류">1-2. 퍼저의 분류</a></li><li class="depth-3"><a href="#1-3-커버리지-기반-진화형-퍼저-coverage-guided-evolutionary-fuzzer">1-3. 커버리지 기반 진화형 퍼저 (Coverage-guided evolutionary fuzzer)</a></li><li class="depth-3"><a href="#1-4-계측instrumentation이-핵심이다">1-4. 계측(instrumentation)이 핵심이다</a></li><li class="depth-3"><a href="#1-5-sanitizer와-함께-쓰기">1-5. Sanitizer와 함께 쓰기</a></li><li class="depth-3"><a href="#1-6-주요-퍼저">1-6. 주요 퍼저</a></li><li class="depth-2"><a href="#2-fuzzing101-소개">2. Fuzzing101 소개</a></li><li class="depth-2"><a href="#3-실습-환경-준비">3. 실습 환경 준비</a></li><li class="depth-3"><a href="#3-1-기본-패키지">3-1. 기본 패키지</a></li><li class="depth-3"><a href="#3-2-afl-설치">3-2. AFL++ 설치</a></li><li class="depth-3"><a href="#error-solve">error solve</a></li><li class="depth-3"><a href="#3-3-core_pattern-설정">3-3. core_pattern 설정</a></li><li class="depth-2"><a href="#4-저장소-클론과-폴더명-정리">4. 저장소 클론과 폴더명 정리</a></li><li class="depth-3"><a href="#4-1-클론">4-1. 클론</a></li><li class="depth-3"><a href="#4-2-폴더-이름의-공백을-언더바로">4-2. 폴더 이름의 공백을 언더바로</a></li><li class="depth-2"><a href="#5-plygnd-디렉터리-구조-설계">5. plygnd 디렉터리 구조 설계</a></li><li class="depth-3"><a href="#5-1-왜-필요한가">5-1. 왜 필요한가</a></li><li class="depth-3"><a href="#5-2-디렉터리-생성">5-2. 디렉터리 생성</a></li><li class="depth-3"><a href="#5-3-git에서-제외">5-3. git에서 제외</a></li><li class="depth-2"><a href="#6-home--static_path-치환">6. $HOME → $STATIC_PATH 치환</a></li><li class="depth-3"><a href="#6-1-왜-pwd가-아니라-별도-변수인가">6-1. 왜 $PWD가 아니라 별도 변수인가</a></li><li class="depth-2"><a href="#7-static_path를-bashrc에-넣지-않는-이유">7. $STATIC_PATH를 .bashrc에 넣지 않는 이유</a></li><li class="depth-2"><a href="#8-tmux로-세션-유지하기">8. tmux로 세션 유지하기</a></li><li class="depth-3"><a href="#8-1-왜-필요한가">8-1. 왜 필요한가</a></li><li class="depth-3"><a href="#8-2-워크플로우">8-2. 워크플로우</a></li><li class="depth-3"><a href="#8-3-분리와-재접속">8-3. 분리와 재접속</a></li><li class="depth-3"><a href="#8-4-자주-쓰는-키">8-4. 자주 쓰는 키</a></li><li class="depth-3"><a href="#8-5-화면-분할해서-모니터링">8-5. 화면 분할해서 모니터링</a></li><li class="depth-3"><a href="#8-6-편의-설정-선택">8-6. 편의 설정 (선택)</a></li><li class="depth-3"><a href="#8-7-세션-정리">8-7. 세션 정리</a></li><li class="depth-2"><a href="#9-실습-시작-전-체크리스트">9. 실습 시작 전 체크리스트</a></li><li class="depth-2"><a href="#10-정리">10. 정리</a></li><li class="depth-3"><a href="#참고-링크">참고 링크</a></li></ul></details> <nav class="toc-rail" aria-label="On this page"><ul><li class="d2"><a href="#1-퍼징이란-무엇인가"><span class="rail-label">1. 퍼징이란 무엇인가</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#1-1-이게-왜-효과가-있을까"><span class="rail-label">1-1. 이게 왜 효과가 있을까?</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#1-2-퍼저의-분류"><span class="rail-label">1-2. 퍼저의 분류</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#1-3-커버리지-기반-진화형-퍼저-coverage-guided-evolutionary-fuzzer"><span class="rail-label">1-3. 커버리지 기반 진화형 퍼저 (Coverage-guided evolutionary fuzzer)</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#1-4-계측instrumentation이-핵심이다"><span class="rail-label">1-4. 계측(instrumentation)이 핵심이다</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#1-5-sanitizer와-함께-쓰기"><span class="rail-label">1-5. Sanitizer와 함께 쓰기</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#1-6-주요-퍼저"><span class="rail-label">1-6. 주요 퍼저</span><span class="rail-dash"></span></a></li><li class="d2"><a href="#2-fuzzing101-소개"><span class="rail-label">2. Fuzzing101 소개</span><span class="rail-dash"></span></a></li><li class="d2"><a href="#3-실습-환경-준비"><span class="rail-label">3. 실습 환경 준비</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#3-1-기본-패키지"><span class="rail-label">3-1. 기본 패키지</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#3-2-afl-설치"><span class="rail-label">3-2. AFL++ 설치</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#error-solve"><span class="rail-label">error solve</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#3-3-core_pattern-설정"><span class="rail-label">3-3. core_pattern 설정</span><span class="rail-dash"></span></a></li><li class="d2"><a href="#4-저장소-클론과-폴더명-정리"><span class="rail-label">4. 저장소 클론과 폴더명 정리</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#4-1-클론"><span class="rail-label">4-1. 클론</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#4-2-폴더-이름의-공백을-언더바로"><span class="rail-label">4-2. 폴더 이름의 공백을 언더바로</span><span class="rail-dash"></span></a></li><li class="d2"><a href="#5-plygnd-디렉터리-구조-설계"><span class="rail-label">5. plygnd 디렉터리 구조 설계</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#5-1-왜-필요한가"><span class="rail-label">5-1. 왜 필요한가</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#5-2-디렉터리-생성"><span class="rail-label">5-2. 디렉터리 생성</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#5-3-git에서-제외"><span class="rail-label">5-3. git에서 제외</span><span class="rail-dash"></span></a></li><li class="d2"><a href="#6-home--static_path-치환"><span class="rail-label">6. $HOME → $STATIC_PATH 치환</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#6-1-왜-pwd가-아니라-별도-변수인가"><span class="rail-label">6-1. 왜 $PWD가 아니라 별도 변수인가</span><span class="rail-dash"></span></a></li><li class="d2"><a href="#7-static_path를-bashrc에-넣지-않는-이유"><span class="rail-label">7. $STATIC_PATH를 .bashrc에 넣지 않는 이유</span><span class="rail-dash"></span></a></li><li class="d2"><a href="#8-tmux로-세션-유지하기"><span class="rail-label">8. tmux로 세션 유지하기</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#8-1-왜-필요한가"><span class="rail-label">8-1. 왜 필요한가</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#8-2-워크플로우"><span class="rail-label">8-2. 워크플로우</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#8-3-분리와-재접속"><span class="rail-label">8-3. 분리와 재접속</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#8-4-자주-쓰는-키"><span class="rail-label">8-4. 자주 쓰는 키</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#8-5-화면-분할해서-모니터링"><span class="rail-label">8-5. 화면 분할해서 모니터링</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#8-6-편의-설정-선택"><span class="rail-label">8-6. 편의 설정 (선택)</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#8-7-세션-정리"><span class="rail-label">8-7. 세션 정리</span><span class="rail-dash"></span></a></li><li class="d2"><a href="#9-실습-시작-전-체크리스트"><span class="rail-label">9. 실습 시작 전 체크리스트</span><span class="rail-dash"></span></a></li><li class="d2"><a href="#10-정리"><span class="rail-label">10. 정리</span><span class="rail-dash"></span></a></li><li class="d3"><a href="#참고-링크"><span class="rail-label">참고 링크</span><span class="rail-dash"></span></a></li></ul></nav> <div class="prose"> <h1 id="퍼징-입문--개념부터-fuzzing101-로컬-환경-세팅까지"><a class="heading-link" href="#퍼징-입문--개념부터-fuzzing101-로컬-환경-세팅까지">퍼징 입문 — 개념부터 Fuzzing101 로컬 환경 세팅까지</a></h1>
+<blockquote>
+<p>이번 글은 퍼징(Fuzzing)이 무엇인지 정리하고, <a href="https://github.com/antonio-morales/Fuzzing101">Fuzzing101</a>을 <strong>VM 이미지 없이 내 서버(ubuntu)에서</strong>
+편하게 진행하기 위한 환경 세팅 과정을 다룬다.</p>
+<p>기존 환경은 VM사용을 전제로 Redme를 작성했기에 모든 경로를 <code>$HOME</code> 기준으로 안내했다.
+이번 블로그는 각 Exercise 폴더 안에 <strong><code>plygnd</code>(playground) 디렉터리</strong>를 만들고
+그곳을 <code>$STATIC_PATH</code>로 잡아서, 실습 결과물이 홈 디렉터리를 어지럽히지 않도록 구성했다.</p>
+</blockquote>
+<hr/>
+<h2 id="1-퍼징이란-무엇인가"><a class="heading-link" href="#1-퍼징이란-무엇인가">1. 퍼징이란 무엇인가</a></h2>
+<p><strong>퍼징(Fuzz testing)</strong> 은 프로그램에 무작위로 생성하거나 변형한 입력을 대량으로 밀어넣고,
+크래시·행(hang)·메모리 오류 같은 비정상 동작이 발생하는지 감시하는 자동화된 소프트웨어 테스트 기법이다.</p>
+<p>핵심 아이디어는 단순하다. <strong>“사람이 생각하지 못한 입력을 기계가 대신 수백만 번 시도한다.”</strong></p>
+<p>일반적인 유닛 테스트가 “개발자가 예상한 케이스”를 검증한다면, 퍼징은 그 반대다.
+예상하지 못한 입력에서 시스템이 어떻게 무너지는지를 찾는다.
+실제로 OpenSSL, Chrome, Linux 커널 등에서 발견된 상당수의 메모리 손상 취약점이 퍼징으로 나왔다.</p>
+<h3 id="1-1-이게-왜-효과가-있을까"><a class="heading-link" href="#1-1-이게-왜-효과가-있을까">1-1. 이게 왜 효과가 있을까?</a></h3>
+<p>파일 포맷 파서, 네트워크 프로토콜 구현, 압축 라이브러리처럼
+<strong>“신뢰할 수 없는 입력을 직접 해석하는 코드”</strong> 가 퍼징의 주 표적이다.
+이런 코드는 경계 조건이 많고, 잘못된 길이 필드 하나로 버퍼 오버플로가 나기 쉽다.</p>
+<p>C/C++처럼 메모리 안전성이 보장되지 않는 언어로 작성된 파서라면 효과가 특히 클 수 있다.</p>
+<blockquote>
+<p>개인적으로 생각할 때에는 Fuzzer는 exploitable한 취약점 부분을 직접적으로 찾을 수는 없더라도, 코드가 vulnerable하다는 것 자체에 대해서는 거짓말을 하지 않는다.</p>
+</blockquote>
+<h3 id="1-2-퍼저의-분류"><a class="heading-link" href="#1-2-퍼저의-분류">1-2. 퍼저의 분류</a></h3>
+<h4 id="입력-생성-방식-기준"><a class="heading-link" href="#입력-생성-방식-기준">입력 생성 방식 기준</a></h4>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>방식</th><th>설명</th><th>특징</th></tr></thead><tbody><tr><td><strong>Mutation-based</strong></td><td>기존 시드(seed) 파일을 비트 뒤집기, 블록 삽입/삭제 등으로 변형</td><td>준비가 쉽다. 포맷 지식 불필요. AFL, honggfuzz</td></tr><tr><td><strong>Generation-based</strong></td><td>포맷 명세나 문법(grammar)을 기반으로 입력을 처음부터 생성</td><td>구조가 복잡한 대상(JS 엔진, SQL)에 강함. Fuzzilli, Peach</td></tr></tbody></table>
+<p>Mutation 방식은 시드가 나쁘면 성능이 급격히 떨어진다.
+보통 seed를 넣을 때에는 정상적으로 작동하는 바이너리나 텍스트를 seed로 넣어야 crash를 찾을 확률이 높아진다.</p>
+<p>반대로 Generation 방식은 문법을 직접 작성해야 해서 초기 비용이 크다.</p>
+<h4 id="대상에-대한-지식-수준-기준"><a class="heading-link" href="#대상에-대한-지식-수준-기준">대상에 대한 지식 수준 기준</a></h4>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>방식</th><th>설명</th></tr></thead><tbody><tr><td><strong>Black-box</strong></td><td>내부를 전혀 모른 채 입력만 던진다. 가장 단순하지만 효율이 낮다</td></tr><tr><td><strong>Grey-box</strong></td><td>계측(instrumentation)으로 실행 경로 정보를 수집해 피드백에 활용. 현대 퍼저의 주류</td></tr><tr><td><strong>White-box</strong></td><td>심볼릭 실행 등으로 경로 조건을 풀어 입력을 도출. 정확하지만 느리고 확장이 어렵다</td></tr></tbody></table>
+<h4 id="실행-구조-기준"><a class="heading-link" href="#실행-구조-기준">실행 구조 기준</a></h4>
+<ul>
+<li><strong>Fork server 방식</strong> — 대상을 매번 fork해서 실행. AFL의 기본 동작.</li>
+<li><strong>Persistent mode</strong> — 한 프로세스 안에서 입력만 바꿔가며 반복 호출. 프로세스 생성 비용이 없어 수십 배 빠르다.</li>
+<li><strong>In-process</strong> — 대상 라이브러리 함수를 직접 호출하는 하네스(harness)를 작성. libFuzzer가 대표적.</li>
+<li><strong>Emulation 기반</strong> — 소스가 없을 때 QEMU 등으로 에뮬레이션하며 커버리지를 수집. AFL++ QEMU mode.</li>
+</ul>
+<h3 id="1-3-커버리지-기반-진화형-퍼저-coverage-guided-evolutionary-fuzzer"><a class="heading-link" href="#1-3-커버리지-기반-진화형-퍼저-coverage-guided-evolutionary-fuzzer">1-3. 커버리지 기반 진화형 퍼저 (Coverage-guided evolutionary fuzzer)</a></h3>
+<p>AFL, libFuzzer, honggfuzz는 모두 이 범주에 속하며, 현재 실전에서 가장 성과가 좋은 방식이다.
+이름 그대로 두 가지 개념이 결합돼 있다.</p>
+<p><strong>Evolutionary (진화형)</strong>
+초기 시드 집합에서 출발해, 변형을 가하고 그중 “좋은” 입력만 남겨 다음 세대의 재료로 삼는다.
+진화 알고리즘에서 차용한 메타휴리스틱이다.</p>
+<p><strong>Coverage-guided (커버리지 기반)</strong>
+그 “좋다”의 판단 기준이 바로 <strong>코드 커버리지</strong>다.
+계측을 통해 각 입력이 어떤 실행 경로를 밟았는지 기록하고,
+<strong>새로운 경로(엣지)를 열은 입력만</strong> 코퍼스에 보존한다.</p>
+<div class="expressive-code"><link rel="stylesheet" href="/blog/_astro/ec.17jf8.css"/><script type="module" src="/blog/_astro/ec.0vx5m.js"></script><figure class="frame"><figcaption class="header"></figcaption><pre data-language="plaintext"><code><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">[시드 코퍼스] ──▶ [변형(mutation)] ──▶ [실행 + 커버리지 수집]</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#e1e4e8">      </span></span><span style="--0:#e1e4e8">▲                                          │</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#e1e4e8">      </span></span><span style="--0:#e1e4e8">│                                          ▼</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#e1e4e8">      </span></span><span style="--0:#e1e4e8">└────── 새 경로를 발견한 입력만 저장 ◀── [판정]</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#e1e4e8">                                                 </span></span><span style="--0:#e1e4e8">│</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#e1e4e8">                                                 </span></span><span style="--0:#e1e4e8">▼</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#e1e4e8">                                          </span></span><span style="--0:#e1e4e8">[크래시면 별도 저장]</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="[시드 코퍼스] ──▶ [변형(mutation)] ──▶ [실행 + 커버리지 수집]      ▲                                          │      │                                          ▼      └────── 새 경로를 발견한 입력만 저장 ◀── [판정]                                                 │                                                 ▼                                          [크래시면 별도 저장]"><div></div></button></div></figure></div>
+<p>이 피드백 루프 덕분에, 퍼저는 매직 넘버 검사나 체크섬 같은 관문을 무작위 입력에 비해서는 쉽게 통과해낸다.
+한 바이트씩 맞아 들어갈 때마다 “새로운 경로”로 인정받아 그 입력이 살아남기 때문이다.</p>
+<h3 id="1-4-계측instrumentation이-핵심이다"><a class="heading-link" href="#1-4-계측instrumentation이-핵심이다">1-4. 계측(instrumentation)이 핵심이다</a></h3>
+<p>여기서 반드시 짚고 넘어가야 할 것이 <strong>계측</strong>이다.
+커버리지 정보를 수집하려면 대상 바이너리의 모든 분기점에 기록 코드가 삽입돼 있어야 한다.</p>
+<p>AFL++는 이를 위해 자체 컴파일러 래퍼(wrapper)를 제공한다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>컴파일러</th><th>설명</th></tr></thead><tbody><tr><td><code>afl-clang-fast</code></td><td>LLVM 패스 기반. 가장 무난한 기본 선택</td></tr><tr><td><code>afl-clang-lto</code></td><td>LTO(Link Time Optimization) 활용. 엣지 충돌이 없어 정확도가 높다</td></tr><tr><td><code>afl-gcc-fast</code></td><td>GCC 플러그인 기반</td></tr><tr><td>QEMU mode (<code>-Q</code>)</td><td>소스가 없는 바이너리용. 느리지만 재컴파일 불필요</td></tr></tbody></table>
+<p><strong>일반 gcc로 빌드한 바이너리를 퍼징하려 하면 실패한다.</strong>
+일반적으로 퍼징을 처음 시도할 때 가장 많이 걸리는 함정이고, 뒤의 트러블슈팅 절에서 다시 다룰 예정이다.</p>
+<h3 id="1-5-sanitizer와-함께-쓰기"><a class="heading-link" href="#1-5-sanitizer와-함께-쓰기">1-5. Sanitizer와 함께 쓰기</a></h3>
+<p>퍼징의 판정 기준이 <strong>crash</strong> 인데, <span style="color:#FF3333">메모리 오류는 <strong>항상</strong> 즉시 크래시로 이어지지 <strong>않는다</strong>.</span></p>
+<p>힙 버퍼를 몇 바이트 넘겨 읽어도 프로그램은 태연히 계속 돌아갈 수 있다.</p>
+<p><strong>ASan(AddressSanitizer)</strong> 같은 새니타이저를 함께 켜면 이런 조용한 오류를 즉시 abort로 바꿔주기 때문에 탐지율이 크게 올라간다.</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#E1E4E8">AFL_USE_ASAN</span><span style="--0:#F97583">=</span><span style="--0:#9ECBFF">1</span><span style="--0:#E1E4E8"> CC</span><span style="--0:#F97583">=</span><span style="--0:#9ECBFF">afl-clang-lto</span><span style="--0:#E1E4E8"> </span><span style="--0:#B392F0">./configure</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">...</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="AFL_USE_ASAN=1 CC=afl-clang-lto ./configure ..."><div></div></button></div></figure></div>
+<p>대신 실행 속도가 2~3배 느려지고 메모리를 많이 쓰므로,
+<code>afl-fuzz</code> 실행 시 <code>-m none</code> 으로 메모리 제한을 푸는 경우가 많다.</p>
+<h3 id="1-6-주요-퍼저"><a class="heading-link" href="#1-6-주요-퍼저">1-6. 주요 퍼저</a></h3>
+<ul>
+<li><strong><a href="https://github.com/AFLplusplus/AFLplusplus">AFL++</a></strong> — AFL의 후속 포크. 현재 사실상의 표준. 이 코스에서 사용한다.</li>
+<li><strong><a href="https://llvm.org/docs/LibFuzzer.html">libFuzzer</a></strong> — LLVM 내장. in-process 방식이라 라이브러리 함수 단위 퍼징에 적합.</li>
+<li><strong><a href="https://github.com/google/honggfuzz">honggfuzz</a></strong> — 구글에서 만든 또 하나의 커버리지 기반 퍼저.</li>
+<li><strong><a href="https://github.com/googleprojectzero/fuzzilli">Fuzzilli</a></strong> — JS 엔진 전용. 문법 기반 생성 방식. Exercise 10에서 등장.</li>
+</ul>
+<hr/>
+<h2 id="2-fuzzing101-소개"><a class="heading-link" href="#2-fuzzing101-소개">2. Fuzzing101 소개</a></h2>
+<p>GitHub Security Lab의 Antonio Morales가 만든 <strong>10개 실습</strong> 구성의 study set 이다.
+각 실습은 실제 CVE를 직접 재현해 찾아내는 것을 목표로 한다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>No.</th><th>타깃</th><th>찾을 CVE</th><th>예상 시간</th><th>주요 주제</th></tr></thead><tbody><tr><td>1</td><td>Xpdf</td><td>CVE-2019-13288</td><td>120분</td><td>afl-clang-fast, afl-fuzz, GDB</td></tr><tr><td>2</td><td>libexif</td><td>CVE-2009-3895, CVE-2012-2836</td><td>6시간</td><td>afl-clang-lto, 라이브러리 퍼징</td></tr><tr><td>3</td><td>TCPdump</td><td>CVE-2017-13028</td><td>4시간</td><td>ASan, Sanitizer</td></tr><tr><td>4</td><td>LibTIFF</td><td>CVE-2016-9297</td><td>3시간</td><td>코드 커버리지, LCOV</td></tr><tr><td>5</td><td>libxml2</td><td>CVE-2017-9048</td><td>3시간</td><td>딕셔너리, 병렬화, 인자 퍼징</td></tr><tr><td>6</td><td>GIMP</td><td>CVE-2016-4994</td><td>7시간</td><td>Persistent 퍼징, 인터랙티브 앱</td></tr><tr><td>7</td><td>VLC</td><td>CVE-2019-14776</td><td>6시간</td><td>부분 계측, 퍼징 하네스</td></tr><tr><td>8</td><td>Adobe Reader</td><td>—</td><td>8시간</td><td>클로즈드소스, QEMU 계측</td></tr><tr><td>9</td><td>7-Zip</td><td>CVE-2016-2334</td><td>8시간</td><td>WinAFL, 윈도우 앱 퍼징</td></tr><tr><td>10</td><td>Chrome / V8</td><td>CVE-2019-5847</td><td>8시간</td><td>Fuzzilli, JS 엔진 퍼징</td></tr></tbody></table>
+<p>난이도가 순차적으로 올라가므로 <strong>1번부터 순서대로</strong> 하는 것을 권한다.</p>
+<blockquote>
+<p>원본은 Ubuntu 20.04.2 LTS에서 테스트됐다.
+이 글의 환경은 Ubuntu 24.04 server LTS이며, 대부분 문제없이 동작하지만
+오래된 소스를 빌드할 때 최신 툴체인과 충돌이 날 수 있다는 점은 감안하자.</p>
+</blockquote>
+<hr/>
+<h2 id="3-실습-환경-준비"><a class="heading-link" href="#3-실습-환경-준비">3. 실습 환경 준비</a></h2>
+<h3 id="3-1-기본-패키지"><a class="heading-link" href="#3-1-기본-패키지">3-1. 기본 패키지</a></h3>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">sudo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">apt</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">update</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">sudo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">apt</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">install</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-y</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">build-essential</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">git</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">wget</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">curl</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">\</span></div></div><div class="ec-line"><div class="code"><span class="indent">    </span><span style="--0:#9ECBFF">python3-dev</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">python3-setuptools</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">automake</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">cmake</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">\</span></div></div><div class="ec-line"><div class="code"><span class="indent">    </span><span style="--0:#9ECBFF">flex</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">bison</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">libglib2.0-dev</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">libpixman-1-dev</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">\</span></div></div><div class="ec-line"><div class="code"><span class="indent">    </span><span style="--0:#9ECBFF">gdb</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">tmux</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="sudo apt updatesudo apt install -y build-essential git wget curl \    python3-dev python3-setuptools automake cmake \    flex bison libglib2.0-dev libpixman-1-dev \    gdb tmux"><div></div></button></div></figure></div>
+<h3 id="3-2-afl-설치"><a class="heading-link" href="#3-2-afl-설치">3-2. AFL++ 설치</a></h3>
+<p>apt 저장소 버전은 오래된 경우가 많으니 소스에서 빌드하는 편이 낫다.</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># LLVM 툴체인</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">sudo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">apt</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">install</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-y</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">lld</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">llvm</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">llvm-dev</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">clang</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># GCC 플러그인 개발 헤더 (버전은 시스템 gcc에 맞춰서)</span></div></div><div class="ec-line"><div class="code"><span style="--0:#E1E4E8">GCCVER</span><span style="--0:#F97583">=</span><span style="--0:#E1E4E8">$(</span><span style="--0:#B392F0">gcc</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-dumpversion</span><span style="--0:#E1E4E8"> </span><span style="--0:#F97583">|</span><span style="--0:#E1E4E8"> </span><span style="--0:#B392F0">cut</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-d.</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-f1</span><span style="--0:#E1E4E8">)</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">sudo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">apt</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">install</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-y</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">gcc-</span><span style="--0:#E1E4E8">${GCCVER}</span><span style="--0:#9ECBFF">-plugin-dev</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">libstdc++-</span><span style="--0:#E1E4E8">${GCCVER}</span><span style="--0:#9ECBFF">-dev</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># AFL을 설치할 폴더로 이동 후</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">git</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">clone</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">https://github.com/AFLplusplus/AFLplusplus</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">cd</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">AFLplusplus</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">make</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">distrib</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">sudo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">make</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">install</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="sudo apt install -y lld llvm llvm-dev clangGCCVER=$(gcc -dumpversion | cut -d. -f1)sudo apt install -y gcc-${GCCVER}-plugin-dev libstdc++-${GCCVER}-devgit clone https://github.com/AFLplusplus/AFLpluspluscd AFLplusplusmake distribsudo make install"><div></div></button></div></figure></div>
+<p>설치 확인:</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">afl-fuzz</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">--help</span><span style="--0:#E1E4E8"> </span><span style="--0:#F97583">|</span><span style="--0:#E1E4E8"> </span><span style="--0:#B392F0">head</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-3</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">which</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">afl-clang-fast</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">afl-clang-fast++</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">afl-clang-lto</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="afl-fuzz --help | head -3which afl-clang-fast afl-clang-fast++ afl-clang-lto"><div></div></button></div></figure></div>
+<p><code>afl-fuzz++4.xx</code> 배너가 뜨고 컴파일러 경로들이 나오면 성공이다.</p>
+<h3 id="error-solve"><a class="heading-link" href="#error-solve">error solve</a></h3>
+<h4 id="afl-빌드-시-자주-나는-에러"><a class="heading-link" href="#afl-빌드-시-자주-나는-에러">AFL++ 빌드 시 자주 나는 에러</a></h4>
+<p><code>make distrib</code>은 QEMU/Unicorn/FRIDA 모드까지 전부 빌드하려 하기 때문에 의존성이 하나라도 빠지면 중간에 멈춘다. 먼저 빌드 대상을 줄여서 원인을 좁히는 게 빠르다. (경험상 그렇다)</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#79B8FF">cd</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">AFLplusplus</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">make</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">source-only</span><span style="--0:#E1E4E8">     </span><span style="--0:#99A0A6"># QEMU/Unicorn 제외, 코어 + LLVM 모드만</span></div></div><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># 또는</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">make</span><span style="--0:#E1E4E8">                 </span><span style="--0:#99A0A6"># 가장 기본</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="cd AFLplusplusmake source-only     # QEMU/Unicorn 제외, 코어 + LLVM 모드만make                 # 가장 기본"><div></div></button></div></figure></div>
+<h4 id="에러별-대응"><a class="heading-link" href="#에러별-대응">에러별 대응</a></h4>
+<p><strong><code>llvm-config not found</code> / <code>LLVM_CONFIG</code> 관련</strong></p>
+<p>여러 버전이 깔려 있으면 명시해줘야 한다.</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">ls</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/usr/bin/llvm-config</span><span style="--0:#79B8FF">*</span><span style="--0:#E1E4E8">                    </span><span style="--0:#99A0A6"># 설치된 버전 확인</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">sudo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">apt</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">install</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-y</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">llvm-18</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">llvm-18-dev</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">clang-18</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">make</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">LLVM_CONFIG=llvm-config-18</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="ls /usr/bin/llvm-config*                    # 설치된 버전 확인sudo apt install -y llvm-18 llvm-18-dev clang-18make LLVM_CONFIG=llvm-config-18"><div></div></button></div></figure></div>
+<p><strong><code>afl-clang-lto</code> 가 안 만들어짐 / <code>ld.lld not found</code></strong></p>
+<p>LTO 모드는 <code>lld</code>가 필수다.</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">sudo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">apt</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">install</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-y</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">lld-18</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">which</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">ld.lld</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">ld.lld-18</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="sudo apt install -y lld-18which ld.lld ld.lld-18"><div></div></button></div></figure></div>
+<p>없으면 빌드 로그에 <code>[-] LLVM_LTO: not building</code> 정도만 뜨고 조용히 넘어가므로, 나중에 <code>afl-clang-lto</code>를 쓰는 Exercise 2·3·4에서 “command not found”로 터지게 된다.</p>
+<p><strong><code>cannot find gcc plugin headers</code> / <code>plugin/include/gcc-plugin.h</code></strong></p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#E1E4E8">GCCVER</span><span style="--0:#F97583">=</span><span style="--0:#E1E4E8">$(</span><span style="--0:#B392F0">gcc</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-dumpversion</span><span style="--0:#E1E4E8"> </span><span style="--0:#F97583">|</span><span style="--0:#E1E4E8"> </span><span style="--0:#B392F0">cut</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-d.</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-f1</span><span style="--0:#E1E4E8">)</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">sudo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">apt</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">install</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-y</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">gcc-</span><span style="--0:#E1E4E8">${GCCVER}</span><span style="--0:#9ECBFF">-plugin-dev</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">libstdc++-</span><span style="--0:#E1E4E8">${GCCVER}</span><span style="--0:#9ECBFF">-dev</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="GCCVER=$(gcc -dumpversion | cut -d. -f1)sudo apt install -y gcc-${GCCVER}-plugin-dev libstdc++-${GCCVER}-dev"><div></div></button></div></figure></div>
+<p><strong><code>Python.h: No such file or directory</code></strong></p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">sudo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">apt</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">install</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-y</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">python3-dev</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">python3-setuptools</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="sudo apt install -y python3-dev python3-setuptools"><div></div></button></div></figure></div>
+<p><strong><code>cargo: command not found</code></strong></p>
+<p>일부 커스텀 뮤테이터가 Rust를 요구한다. 안 쓸 거면 <code>make source-only</code>로 우회하거나:</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">curl</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">--proto</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">&#39;=https&#39;</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">--tlsv1.2</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-sSf</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">https://sh.rustup.rs</span><span style="--0:#E1E4E8"> </span><span style="--0:#F97583">|</span><span style="--0:#E1E4E8"> </span><span style="--0:#B392F0">sh</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-s</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">--</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-y</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">.</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">&quot;</span><span style="--0:#E1E4E8">$HOME</span><span style="--0:#9ECBFF">/.cargo/env&quot;</span></div></div><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># or</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">source</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">&quot;</span><span style="--0:#E1E4E8">$HOME</span><span style="--0:#9ECBFF">/.cargo/env&quot;</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y. &#34;$HOME/.cargo/env&#34;source &#34;$HOME/.cargo/env&#34;"><div></div></button></div></figure></div>
+<p><strong>QEMU 모드 빌드 실패 (<code>glib-2.0 not found</code>, <code>pixman</code> 등)</strong></p>
+<p>Exercise 8 전까지는 필요 없다. 나중에 필요할 때 따로 빌드하면 된다.</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">sudo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">apt</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">install</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-y</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">libglib2.0-dev</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">libpixman-1-dev</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">ninja-build</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">cd</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">AFLplusplus/qemu_mode</span><span style="--0:#E1E4E8"> &amp;&amp; </span><span style="--0:#B392F0">./build_qemu_support.sh</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="sudo apt install -y libglib2.0-dev libpixman-1-dev ninja-buildcd AFLplusplus/qemu_mode &#38;&#38; ./build_qemu_support.sh"><div></div></button></div></figure></div>
+<p><strong>한 방에 의존성 몰아넣기</strong></p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">sudo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">apt</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">update</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">sudo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">apt</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">install</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-y</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">build-essential</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">git</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">wget</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">curl</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">\</span></div></div><div class="ec-line"><div class="code"><span class="indent">    </span><span style="--0:#9ECBFF">python3-dev</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">python3-setuptools</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">automake</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">cmake</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">ninja-build</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">\</span></div></div><div class="ec-line"><div class="code"><span class="indent">    </span><span style="--0:#9ECBFF">flex</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">bison</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">libglib2.0-dev</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">libpixman-1-dev</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">\</span></div></div><div class="ec-line"><div class="code"><span class="indent">    </span><span style="--0:#9ECBFF">llvm</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">llvm-dev</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">clang</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">lld</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">cargo</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">\</span></div></div><div class="ec-line"><div class="code"><span class="indent">    </span><span style="--0:#9ECBFF">gcc-</span><span style="--0:#E1E4E8">$(</span><span style="--0:#B392F0">gcc</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-dumpversion</span><span style="--0:#E1E4E8"> </span><span style="--0:#F97583">|</span><span style="--0:#E1E4E8"> </span><span style="--0:#B392F0">cut</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-d.</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-f1</span><span style="--0:#E1E4E8">)</span><span style="--0:#9ECBFF">-plugin-dev</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">\</span></div></div><div class="ec-line"><div class="code"><span class="indent">    </span><span style="--0:#9ECBFF">libstdc++-</span><span style="--0:#E1E4E8">$(</span><span style="--0:#B392F0">gcc</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-dumpversion</span><span style="--0:#E1E4E8"> </span><span style="--0:#F97583">|</span><span style="--0:#E1E4E8"> </span><span style="--0:#B392F0">cut</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-d.</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-f1</span><span style="--0:#E1E4E8">)</span><span style="--0:#9ECBFF">-dev</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="sudo apt updatesudo apt install -y build-essential git wget curl \    python3-dev python3-setuptools automake cmake ninja-build \    flex bison libglib2.0-dev libpixman-1-dev \    llvm llvm-dev clang lld cargo \    gcc-$(gcc -dumpversion | cut -d. -f1)-plugin-dev \    libstdc++-$(gcc -dumpversion | cut -d. -f1)-dev"><div></div></button></div></figure></div>
+<p><strong>빌드 결과 검증</strong> — 에러 없이 끝나도 어떤 모드가 빠졌는지는 따로 확인해야 한다.</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#79B8FF">cd</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">AFLplusplus</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">ls</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-1</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">afl-clang-fast</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">afl-clang-lto</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">afl-gcc-fast</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">afl-fuzz</span><span style="--0:#E1E4E8"> </span><span style="--0:#F97583">2&gt;&amp;1</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="cd AFLplusplusls -1 afl-clang-fast afl-clang-lto afl-gcc-fast afl-fuzz 2>&#38;1"><div></div></button></div></figure></div>
+<p>없는 게 있으면 위 항목 중 해당 의존성이 빠진 것이다. 의존성 설치 후에는 <code>make clean &amp;&amp; make</code> 로 다시 빌드하면 된다.</p>
+<hr/>
+<h4 id="path-등록"><a class="heading-link" href="#path-등록">PATH 등록</a></h4>
+<p><code>sudo make install</code>을 했다면 <code>/usr/local/bin</code>에 들어가므로 별도 설정이 필요 없다. 설치 없이 소스 디렉터리에서 쓰려는 경우에만 아래가 필요하다.</p>
+<p><strong>현재 셸에만 임시 적용</strong></p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#F97583">export</span><span style="--0:#E1E4E8"> PATH</span><span style="--0:#F97583">=</span><span style="--0:#9ECBFF">&quot;</span><span style="--0:#E1E4E8">$PWD</span><span style="--0:#9ECBFF">/AFLplusplus:</span><span style="--0:#E1E4E8">$PATH</span><span style="--0:#9ECBFF">&quot;</span><span style="--0:#E1E4E8"> </span><span style="--0:#99A0A6"># git clone을 한 dir에서</span></div></div><div class="ec-line"><div class="code"><span style="--0:#F97583">export</span><span style="--0:#E1E4E8"> AFL_PATH</span><span style="--0:#F97583">=</span><span style="--0:#9ECBFF">&quot;</span><span style="--0:#E1E4E8">$PWD</span><span style="--0:#9ECBFF">/AFLplusplus&quot;</span><span style="--0:#E1E4E8">  </span><span style="--0:#99A0A6"># git clone을 한 dir에서</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="export PATH=&#34;$PWD/AFLplusplus:$PATH&#34; # git clone을 한 dir에서export AFL_PATH=&#34;$PWD/AFLplusplus&#34;  # git clone을 한 dir에서"><div></div></button></div></figure></div>
+<p><code>AFL_PATH</code>는 <code>afl-gcc</code>/<code>afl-clang</code>이 <code>afl-as</code>, <code>afl-llvm-rt.o</code> 같은 보조 파일을 찾는 데 쓴다. PATH만 잡고 이걸 빼먹으면 컴파일 단계에서 <code>Oops, unable to find the &#39;afl-as&#39; binary</code> 가 난다.</p>
+<p><strong>셸 설정 파일에 영구 등록</strong></p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># bash</span></div></div><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># git clone을 한 dir에서</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">cat</span><span style="--0:#E1E4E8"> </span><span style="--0:#F97583">&gt;&gt;</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">~/.bashrc</span><span style="--0:#E1E4E8"> </span><span style="--0:#F97583">&lt;&lt;</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">&#39;EOF&#39;</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#9ECBFF"># AFL++</span></div></div><div class="ec-line"><div class="code"><span style="--0:#9ECBFF">export AFL_PATH=&quot;$PWD/AFLplusplus&quot;</span></div></div><div class="ec-line"><div class="code"><span style="--0:#9ECBFF">export PATH=&quot;$AFL_PATH:$PATH&quot;</span></div></div><div class="ec-line"><div class="code"><span style="--0:#9ECBFF">EOF</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">source</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">~/.bashrc</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="cat >> ~/.bashrc << 'EOF'export AFL_PATH=&#34;$PWD/AFLplusplus&#34;export PATH=&#34;$AFL_PATH:$PATH&#34;EOFsource ~/.bashrc"><div></div></button></div></figure></div>
+<p>zsh를 쓴다면 <code>~/.zshrc</code>로 바꾸면 됩니다. 어느 셸인지 모르겠으면:</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#79B8FF">echo</span><span style="--0:#E1E4E8"> $SHELL</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="echo $SHELL"><div></div></button></div></figure></div>
+<p><strong>셸 자동 판별해서 넣기</strong></p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># git clone을 한 dir에서</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#E1E4E8">RC</span><span style="--0:#F97583">=</span><span style="--0:#9ECBFF">~/.bashrc</span></div></div><div class="ec-line"><div class="code"><span style="--0:#E1E4E8">[ </span><span style="--0:#F97583">-n</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">&quot;</span><span style="--0:#E1E4E8">$ZSH_VERSION</span><span style="--0:#9ECBFF">&quot;</span><span style="--0:#E1E4E8"> ] &amp;&amp; RC</span><span style="--0:#F97583">=</span><span style="--0:#9ECBFF">~/.zshrc</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">cat</span><span style="--0:#E1E4E8"> </span><span style="--0:#F97583">&gt;&gt;</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">&quot;</span><span style="--0:#E1E4E8">$RC</span><span style="--0:#9ECBFF">&quot;</span><span style="--0:#E1E4E8"> </span><span style="--0:#F97583">&lt;&lt;</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">&#39;EOF&#39;</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#9ECBFF"># AFL++</span></div></div><div class="ec-line"><div class="code"><span style="--0:#9ECBFF">export AFL_PATH=&quot;$PWD/AFLplusplus&quot;</span></div></div><div class="ec-line"><div class="code"><span style="--0:#9ECBFF">export PATH=&quot;$AFL_PATH:$PATH&quot;</span></div></div><div class="ec-line"><div class="code"><span style="--0:#9ECBFF">EOF</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">source</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">&quot;</span><span style="--0:#E1E4E8">$RC</span><span style="--0:#9ECBFF">&quot;</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="RC=~/.bashrc[ -n &#34;$ZSH_VERSION&#34; ] &#38;&#38; RC=~/.zshrccat >> &#34;$RC&#34; << 'EOF'export AFL_PATH=&#34;$PWD/AFLplusplus&#34;export PATH=&#34;$AFL_PATH:$PATH&#34;EOFsource &#34;$RC&#34;"><div></div></button></div></figure></div>
+<p><strong>확인</strong></p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#79B8FF">which</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">afl-fuzz</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">afl-clang-fast</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">echo</span><span style="--0:#E1E4E8"> $PATH </span><span style="--0:#F97583">|</span><span style="--0:#E1E4E8"> </span><span style="--0:#B392F0">tr</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">&#39;:&#39;</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">&#39;\n&#39;</span><span style="--0:#E1E4E8"> </span><span style="--0:#F97583">|</span><span style="--0:#E1E4E8"> </span><span style="--0:#B392F0">head</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">afl-fuzz</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">--help</span><span style="--0:#E1E4E8"> </span><span style="--0:#F97583">|</span><span style="--0:#E1E4E8"> </span><span style="--0:#B392F0">head</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-3</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="which afl-fuzz afl-clang-fastecho $PATH | tr ':' '\n' | headafl-fuzz --help | head -3"><div></div></button></div></figure></div>
+<h3 id="3-3-core_pattern-설정"><a class="heading-link" href="#3-3-core_pattern-설정">3-3. <code>core_pattern</code> 설정</a></h3>
+<p>리눅스는 기본적으로 코어 덤프를 <code>apport</code> 같은 외부 유틸리티로 넘긴다.
+이 상태에서는 크래시 통지가 지연돼 퍼저가 크래시를 타임아웃으로 오인한다.</p>
+<p>이 때는 AFL++는 아예 실행을 거부한다.</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">cat</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/proc/sys/kernel/core_pattern</span><span style="--0:#E1E4E8">            </span><span style="--0:#99A0A6"># 현재 값</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">echo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">core</span><span style="--0:#E1E4E8"> </span><span style="--0:#F97583">|</span><span style="--0:#E1E4E8"> </span><span style="--0:#B392F0">sudo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">tee</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/proc/sys/kernel/core_pattern</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="cat /proc/sys/kernel/core_pattern            # 현재 값echo core | sudo tee /proc/sys/kernel/core_pattern"><div></div></button></div></figure></div>
+<blockquote>
+<p><strong>주의</strong>: <code>sudo su</code> 로 전환한 뒤 <code>echo core &gt; /proc/sys/kernel/core_pattern</code> 을 쓰면
+리다이렉션이 원래 셸 권한으로 평가돼 <code>Permission denied</code> 가 난다.
+반드시 <code>sudo tee</code> 를 쓸 것.</p>
+</blockquote>
+<p><strong>재부팅하면 초기화된다.</strong> 매번 하기 귀찮다면 영구 설정:</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#79B8FF">echo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">&#39;kernel.core_pattern=core&#39;</span><span style="--0:#E1E4E8"> </span><span style="--0:#F97583">|</span><span style="--0:#E1E4E8"> </span><span style="--0:#B392F0">sudo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">tee</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/etc/sysctl.d/99-afl.conf</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">sudo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">sysctl</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">--system</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="echo 'kernel.core_pattern=core' | sudo tee /etc/sysctl.d/99-afl.confsudo sysctl --system"><div></div></button></div></figure></div>
+<hr/>
+<h2 id="4-저장소-클론과-폴더명-정리"><a class="heading-link" href="#4-저장소-클론과-폴더명-정리">4. 저장소 클론과 폴더명 정리</a></h2>
+<h3 id="4-1-클론"><a class="heading-link" href="#4-1-클론">4-1. 클론</a></h3>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">mkdir</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-p</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">~/study</span><span style="--0:#E1E4E8"> &amp;&amp; </span><span style="--0:#79B8FF">cd</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">~/study</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">git</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">clone</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">https://github.com/antonio-morales/Fuzzing101.git</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">cd</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">Fuzzing101</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="mkdir -p ~/study &#38;&#38; cd ~/studygit clone https://github.com/antonio-morales/Fuzzing101.gitcd Fuzzing101"><div></div></button></div></figure></div>
+<h3 id="4-2-폴더-이름의-공백을-언더바로"><a class="heading-link" href="#4-2-폴더-이름의-공백을-언더바로">4-2. 폴더 이름의 공백을 언더바로</a></h3>
+<p>원본 저장소의 디렉터리는 <code>Exercise 1</code>, <code>Exercise 10</code> 처럼 <strong>공백이 들어 있다.</strong>
+쉘에서 매번 따옴표나 이스케이프를 붙여야 해서 불편하고,
+스크립트를 짤 때 실수하기 딱 좋다. 전부 언더바로 바꾼다.</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#F97583">for</span><span style="--0:#E1E4E8"> d </span><span style="--0:#F97583">in</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">Exercise</span><span style="--0:#79B8FF">\ </span><span style="--0:#9ECBFF">*</span><span style="--0:#E1E4E8">; </span><span style="--0:#F97583">do</span></div></div><div class="ec-line"><div class="code"><span class="indent">    </span><span style="--0:#B392F0">mv</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">&quot;</span><span style="--0:#E1E4E8">$d</span><span style="--0:#9ECBFF">&quot;</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">&quot;${</span><span style="--0:#E1E4E8">d</span><span style="--0:#F97583">//</span><span style="--0:#9ECBFF"> </span><span style="--0:#F97583">/</span><span style="--0:#E1E4E8">_</span><span style="--0:#9ECBFF">}&quot;</span></div></div><div class="ec-line"><div class="code"><span style="--0:#F97583">done</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="for d in Exercise\ *; do    mv &#34;$d&#34; &#34;${d// /_}&#34;done"><div></div></button></div></figure></div>
+<p>결과 확인:</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">tree</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">.</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-L</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">1</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="tree . -L 1"><div></div></button></div></figure></div>
+<div class="expressive-code"><figure class="frame"><figcaption class="header"></figcaption><pre data-language="plaintext"><code><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">.</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">├── Diagram.png</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">├── Exercise_1</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">├── Exercise_10</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">├── Exercise_2</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">...</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">├── LICENSE</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">├── Readme.md</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">└── Resources</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code=".├── Diagram.png├── Exercise_1├── Exercise_10├── Exercise_2...├── LICENSE├── Readme.md└── Resources"><div></div></button></div></figure></div>
+<hr/>
+<h2 id="5-plygnd-디렉터리-구조-설계"><a class="heading-link" href="#5-plygnd-디렉터리-구조-설계">5. <code>plygnd</code> 디렉터리 구조 설계</a></h2>
+<h3 id="5-1-왜-필요한가"><a class="heading-link" href="#5-1-왜-필요한가">5-1. 왜 필요한가</a></h3>
+<p>원본 Readme들은 이런 식으로 시작한다.</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#79B8FF">cd</span><span style="--0:#E1E4E8"> $HOME</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">mkdir</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">fuzzing_xpdf</span><span style="--0:#E1E4E8"> &amp;&amp; </span><span style="--0:#79B8FF">cd</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">fuzzing_xpdf/</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">wget</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">https://dl.xpdfreader.com/old/xpdf-3.02.tar.gz</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="cd $HOMEmkdir fuzzing_xpdf &#38;&#38; cd fuzzing_xpdf/wget https://dl.xpdfreader.com/old/xpdf-3.02.tar.gz"><div></div></button></div></figure></div>
+<p>전용 VM을 쓴다면 홈 디렉터리가 어질러져도 상관없다.
+하지만 평소 쓰는 서버나 개인 계정에서 실습한다면 이야기가 다르다.</p>
+<ul>
+<li>소스 트리, 빌드 산출물, 크래시 파일이 홈에 그대로 쌓인다</li>
+<li>Exercise가 10개니 <code>fuzzing_xpdf</code>, <code>fuzzing_libexif</code>, <code>fuzzing_tiff</code> … 가 전부 홈에 널린다</li>
+<li>어느 실습 결과물인지 나중에 구분이 안 된다</li>
+</ul>
+<p>그래서 <strong>각 Exercise 폴더 안에 <code>plygnd</code>(playground) 디렉터리를 만들고,
+그 안에서만 작업하도록</strong> 구조를 바꾼다.</p>
+<div class="expressive-code"><figure class="frame"><figcaption class="header"></figcaption><pre data-language="plaintext"><code><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">~/study/Fuzzing101/</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">├── Exercise_1/</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">│   ├── Readme.md</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">│   ├── Images/</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">│   └── plygnd/          ← 여기가 $STATIC_PATH</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">│       └── fuzzing_xpdf/</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">│           ├── xpdf-3.02/</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">│           ├── install/</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">│           ├── pdf_examples/</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">│           └── out/</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">├── Exercise_2/</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">│   ├── Readme.md</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">│   └── plygnd/          ← Exercise 2의 $STATIC_PATH</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">└── ...</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="~/study/Fuzzing101/├── Exercise_1/│   ├── Readme.md│   ├── Images/│   └── plygnd/          ← 여기가 $STATIC_PATH│       └── fuzzing_xpdf/│           ├── xpdf-3.02/│           ├── install/│           ├── pdf_examples/│           └── out/├── Exercise_2/│   ├── Readme.md│   └── plygnd/          ← Exercise 2의 $STATIC_PATH└── ..."><div></div></button></div></figure></div>
+<p>실습 자료(Readme, 이미지)와 실습 결과물이 같은 폴더에 묶이니
+나중에 다시 볼 때 맥락이 붙어 있어 좋다.</p>
+<h3 id="5-2-디렉터리-생성"><a class="heading-link" href="#5-2-디렉터리-생성">5-2. 디렉터리 생성</a></h3>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#79B8FF">cd</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">~/study/Fuzzing101</span></div></div><div class="ec-line"><div class="code"><span style="--0:#F97583">for</span><span style="--0:#E1E4E8"> i </span><span style="--0:#F97583">in</span><span style="--0:#E1E4E8"> $(</span><span style="--0:#B392F0">seq</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">1</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">10</span><span style="--0:#E1E4E8">); </span><span style="--0:#F97583">do</span></div></div><div class="ec-line"><div class="code"><span class="indent">    </span><span style="--0:#B392F0">mkdir</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-p</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">&quot;Exercise_</span><span style="--0:#E1E4E8">$i</span><span style="--0:#9ECBFF">/plygnd&quot;</span></div></div><div class="ec-line"><div class="code"><span style="--0:#F97583">done</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="cd ~/study/Fuzzing101for i in $(seq 1 10); do    mkdir -p &#34;Exercise_$i/plygnd&#34;done"><div></div></button></div></figure></div>
+<h3 id="5-3-git에서-제외"><a class="heading-link" href="#5-3-git에서-제외">5-3. git에서 제외</a></h3>
+<p><code>plygnd</code> 안에는 수 GB의 소스와 빌드 산출물이 쌓인다.
+클론한 저장소는 git 저장소이므로 <code>.gitignore</code>에 넣어 <code>git status</code>를 깨끗하게 유지하자.</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#79B8FF">echo</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">&#39;plygnd/&#39;</span><span style="--0:#E1E4E8"> </span><span style="--0:#F97583">&gt;&gt;</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">.gitignore</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">git</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">status</span><span style="--0:#E1E4E8">    </span><span style="--0:#99A0A6"># plygnd가 안 보이면 정상</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="echo 'plygnd/' >> .gitignoregit status    # plygnd가 안 보이면 정상"><div></div></button></div></figure></div>
+<hr/>
+<h2 id="6-home--static_path-치환"><a class="heading-link" href="#6-home--static_path-치환">6. <code>$HOME</code> → <code>$STATIC_PATH</code> 치환</a></h2>
+<p>이제 Readme들의 <code>$HOME</code>을 <code>$STATIC_PATH</code>로 바꾼다.</p>
+<h3 id="6-1-왜-pwd가-아니라-별도-변수인가"><a class="heading-link" href="#6-1-왜-pwd가-아니라-별도-변수인가">6-1. 왜 <code>$PWD</code>가 아니라 별도 변수인가</a></h3>
+<p>처음엔 <code>$PWD</code>로 바꿔볼까 싶었지만, cd 를 할 때마다 값이 바뀌어서 사용을 하면 안된다. <code>$HOME</code> 을 <code>$STATIC_PATH</code>로 바꾸자.</p>
+<p>Readme는 이런 흐름으로 진행된다.</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#79B8FF">cd</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">plygnd</span></div></div><div class="ec-line"><div class="code"><span style="--0:#E1E4E8">STATIC_PATH</span><span style="--0:#F97583">=</span><span style="--0:#E1E4E8">$PWD</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">cd</span><span style="--0:#E1E4E8"> $STATIC_PATH</span><span style="--0:#9ECBFF">/fuzzing_xpdf/xpdf-3.02/</span><span style="--0:#E1E4E8">     </span><span style="--0:#99A0A6"># 여기서 디렉터리 이동</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">./configure</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">--prefix=</span><span style="--0:#9ECBFF">&quot;</span><span style="--0:#E1E4E8">$STATIC_PATH</span><span style="--0:#9ECBFF">/fuzzing_xpdf/install/&quot;</span><span style="--0:#E1E4E8">   </span><span style="--0:#99A0A6"># 이 시점의 기준 경로는?</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="cd plygndSTATIC_PATH=$PWDcd $STATIC_PATH/fuzzing_xpdf/xpdf-3.02/     # 여기서 디렉터리 이동./configure --prefix=&#34;$STATIC_PATH/fuzzing_xpdf/install/&#34;   # 이 시점의 기준 경로는?"><div></div></button></div></figure></div>
+<p><code>$PWD</code>였다면 두 번째 줄의 기준이 이미 <code>xpdf-3.02/</code>로 바뀌어 있어
+<code>install</code> 디렉터리가 엉뚱한 곳에 생긴다.
+<strong>한 번 정하면 세션 내내 고정되는 변수</strong>가 필요하다. 그래서 <code>$STATIC_PATH</code>다.</p>
+<h2 id="7-static_path를-bashrc에-넣지-않는-이유"><a class="heading-link" href="#7-static_path를-bashrc에-넣지-않는-이유">7. <code>$STATIC_PATH</code>를 <code>.bashrc</code>에 넣지 않는 이유</a></h2>
+<p>한 번 export 해두면 편할 것 같아서 <code>~/.bashrc</code>에 넣고 싶은 유혹이 있다.
+<strong>하지만 넣으면 안 된다.</strong></p>
+<p><code>STATIC_PATH</code>는 Exercise마다 값이 다르다.
+<code>.bashrc</code>에 Exercise 1 경로를 박아두고 Exercise 3을 진행하면 어떻게 될까.</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># .bashrc: export STATIC_PATH=~/study/Fuzzing101/Exercise_1/plygnd</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">cd</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">~/study/Fuzzing101/Exercise_3/plygnd</span></div></div><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># Readme를 따라 붙여넣기...</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">./configure</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">--prefix=</span><span style="--0:#9ECBFF">&quot;</span><span style="--0:#E1E4E8">$STATIC_PATH</span><span style="--0:#9ECBFF">/fuzzing_tcpdump/install/&quot;</span></div></div><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># → Exercise_1/plygnd 아래에 tcpdump가 설치된다</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="cd ~/study/Fuzzing101/Exercise_3/plygnd./configure --prefix=&#34;$STATIC_PATH/fuzzing_tcpdump/install/&#34;"><div></div></button></div></figure></div>
+<p>에러도 안 나고 조용히 잘못된 곳에 설치된다. 이런 종류가 제일 잡기 어렵다.</p>
+<p><strong>원칙: 작업할 <code>plygnd</code>에 들어가서, 그 자리에서 <code>$PWD</code>로 지정한다.</strong></p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#79B8FF">cd</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">~/study/Fuzzing101/Exercise_3/plygnd</span></div></div><div class="ec-line"><div class="code"><span style="--0:#F97583">export</span><span style="--0:#E1E4E8"> STATIC_PATH</span><span style="--0:#F97583">=</span><span style="--0:#E1E4E8">$PWD</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">echo</span><span style="--0:#E1E4E8"> $STATIC_PATH      </span><span style="--0:#99A0A6"># 매번 눈으로 확인하는게 좋다....</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="cd ~/study/Fuzzing101/Exercise_3/plygndexport STATIC_PATH=$PWDecho $STATIC_PATH      # 매번 눈으로 확인하는게 좋다...."><div></div></button></div></figure></div>
+<p><code>$PWD</code>를 값으로 쓰되, <code>STATIC_PATH</code>에 <strong>한 번 복사해서 고정</strong>하는 것이다.
+이후 <code>cd</code>로 어디를 돌아다녀도 <code>STATIC_PATH</code>는 그대로다.
+<code>$PWD</code>의 편리함과 고정 변수의 안정성을 둘 다 취한다.</p>
+<p><code>export</code>를 붙이는 이유는 <code>configure</code>, <code>make</code>, <code>afl-fuzz</code> 같은
+<strong>자식 프로세스에도 전달되어야</strong> 하기 때문이다.
+<code>export</code> 없이 <code>STATIC_PATH=$PWD</code>만 하면 현재 셸에서의 문자열 확장은 되지만
+자식 프로세스 환경에는 들어가지 않는다.</p>
+<p>그리고 사실…tmux써서 퍼징을 백그라운드로도 돌릴 수 있게 할 것이기 때문에 .bashrc에는 안넣는게 좋다.</p>
+<hr/>
+<h2 id="8-tmux로-세션-유지하기"><a class="heading-link" href="#8-tmux로-세션-유지하기">8. tmux로 세션 유지하기</a></h2>
+<h3 id="8-1-왜-필요한가"><a class="heading-link" href="#8-1-왜-필요한가">8-1. 왜 필요한가</a></h3>
+<p>SSH로 원격 서버에 붙어 실습한다면 tmux는 선택이 아니라 필수다.</p>
+<ul>
+<li>빌드가 수 분~수십 분 걸린다</li>
+<li><strong>퍼징은 크래시 하나 찾는 데 1~2시간이 걸린다</strong></li>
+<li>SSH 연결이 끊기면 그 셸의 프로세스도 함께 죽는다</li>
+</ul>
+<p>노트북 덮개를 닫거나, 와이파이가 잠깐 끊기거나, 회사에서 집으로 이동하는 순간
+2시간 돌린 퍼징이 통째로 날아간다.</p>
+<p>tmux 세션 안에서 돌리면 프로세스가 서버 쪽에 남아 있어,
+재접속 후 <code>attach</code> 하면 <strong>돌아가던 화면 그대로</strong> 이어서 볼 수 있다.</p>
+<h3 id="8-2-워크플로우"><a class="heading-link" href="#8-2-워크플로우">8-2. 워크플로우</a></h3>
+<p><strong>접속 → plygnd로 이동 → tmux 세션 생성 → 그 안에서 환경 설정</strong> 순서다.</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># 1) 서버 접속</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">ssh</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">user@myserver</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># 2) 작업할 exercise의 plygnd로 이동</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">cd</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">~/study/Fuzzing101/Exercise_1/plygnd</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># 3) 그 자리에서 tmux 세션 생성</span></div></div><div class="ec-line"><div class="code"><span style="--0:#99A0A6">#    (tmux는 현재 디렉터리를 물려받으므로 세션 안에서도 plygnd에 있다)</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">tmux</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">new</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-s</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">ex1</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># ── 여기서부터는 tmux 세션 안 ──</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># 4) 환경 설정</span></div></div><div class="ec-line"><div class="code"><span style="--0:#F97583">export</span><span style="--0:#E1E4E8"> STATIC_PATH</span><span style="--0:#F97583">=</span><span style="--0:#E1E4E8">$PWD</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">echo</span><span style="--0:#E1E4E8"> $STATIC_PATH        </span><span style="--0:#99A0A6"># .../Exercise_1/plygnd 확인</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># 5) 이제 Readme를 따라 진행</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="ssh user@myservercd ~/study/Fuzzing101/Exercise_1/plygndtmux new -s ex1export STATIC_PATH=$PWDecho $STATIC_PATH        # .../Exercise_1/plygnd 확인"><div></div></button></div></figure></div>
+<p>세션 이름을 <code>ex1</code>, <code>ex3</code> 처럼 Exercise 번호로 지으면
+여러 실습을 병행할 때 헷갈리지 않는다.</p>
+<blockquote>
+<p><strong>중요</strong>: <code>STATIC_PATH</code>는 <strong>tmux 세션 안의 셸</strong>에서 export 해야 한다.
+바깥 셸에서 설정하고 나중에 attach 해봐야, 이미 떠 있는 tmux 셸에는 반영되지 않는다.
+환경변수는 프로세스 생성 시점에 상속되기 때문이다.</p>
+</blockquote>
+<h3 id="8-3-분리와-재접속"><a class="heading-link" href="#8-3-분리와-재접속">8-3. 분리와 재접속</a></h3>
+<div class="expressive-code"><figure class="frame"><figcaption class="header"></figcaption><pre data-language="plaintext"><code><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">Ctrl+b 를 누르고 뗀 뒤 → d      # 분리(detach). SSH를 끊어도 계속 돈다</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="Ctrl+b 를 누르고 뗀 뒤 → d      # 분리(detach). SSH를 끊어도 계속 돈다"><div></div></button></div></figure></div>
+<p>나중에 다시:</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">ssh</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">user@myserver</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">tmux</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">ls</span><span style="--0:#E1E4E8">                  </span><span style="--0:#99A0A6"># 살아있는 세션 목록</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">tmux</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">attach</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-t</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">ex1</span><span style="--0:#E1E4E8">       </span><span style="--0:#99A0A6"># 다시 붙기</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="ssh user@myservertmux ls                  # 살아있는 세션 목록tmux attach -t ex1       # 다시 붙기"><div></div></button></div></figure></div>
+<p><code>tmux ls</code> 출력 예시:</p>
+<div class="expressive-code"><figure class="frame"><figcaption class="header"></figcaption><pre data-language="plaintext"><code><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">ex1: 1 windows (created Sun Jul 26 15:20:11 2026)</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="ex1: 1 windows (created Sun Jul 26 15:20:11 2026)"><div></div></button></div></figure></div>
+<h3 id="8-4-자주-쓰는-키"><a class="heading-link" href="#8-4-자주-쓰는-키">8-4. 자주 쓰는 키</a></h3>
+<p>모두 <strong>prefix(<code>Ctrl+b</code>)를 먼저 누르고 뗀 뒤</strong> 해당 키를 누른다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>키</th><th>동작</th></tr></thead><tbody><tr><td><code>d</code></td><td>detach</td></tr><tr><td><code>[</code></td><td>스크롤 모드 진입 (<code>q</code>로 나감)</td></tr><tr><td><code>c</code></td><td>새 창 생성</td></tr><tr><td><code>n</code> / <code>p</code></td><td>다음 / 이전 창</td></tr><tr><td><code>&quot;</code></td><td>가로 분할</td></tr><tr><td><code>%</code></td><td>세로 분할</td></tr><tr><td><code>방향키</code></td><td>분할된 pane 간 이동</td></tr><tr><td><code>&amp;</code></td><td>현재 창 종료</td></tr></tbody></table>
+<p>AFL의 상태 화면은 터미널을 계속 다시 그리기 때문에 마우스 휠 스크롤이 안 먹는다.
+지나간 로그를 보려면 <code>Ctrl+b</code> → <code>[</code> 로 스크롤 모드에 들어가야 한다.</p>
+<h3 id="8-5-화면-분할해서-모니터링"><a class="heading-link" href="#8-5-화면-분할해서-모니터링">8-5. 화면 분할해서 모니터링</a></h3>
+<p>퍼징 화면은 그대로 두고 다른 pane에서 진행 상황을 확인할 수 있다.</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># Ctrl+b &quot; 로 가로 분할한 뒤, 아래쪽 pane에서</span></div></div><div class="ec-line"><div class="code"><span style="--0:#F97583">export</span><span style="--0:#E1E4E8"> STATIC_PATH</span><span style="--0:#F97583">=~</span><span style="--0:#E1E4E8">/study/Fuzzing101/Exercise_1/plygnd   </span><span style="--0:#99A0A6"># 새 pane은 별도 셸</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">watch</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-n</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">5</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">afl-whatsup</span><span style="--0:#E1E4E8"> $STATIC_PATH</span><span style="--0:#9ECBFF">/fuzzing_xpdf/out/</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#99A0A6"># 또는 크래시 개수만</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">watch</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-n</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">10</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">&#39;ls $STATIC_PATH/fuzzing_xpdf/out/default/crashes/ 2&gt;/dev/null | wc -l&#39;</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="export STATIC_PATH=~/study/Fuzzing101/Exercise_1/plygnd   # 새 pane은 별도 셸watch -n 5 afl-whatsup $STATIC_PATH/fuzzing_xpdf/out/watch -n 10 'ls $STATIC_PATH/fuzzing_xpdf/out/default/crashes/ 2>/dev/null | wc -l'"><div></div></button></div></figure></div>
+<p><strong>새로 만든 pane은 별도의 셸</strong>이므로 <code>STATIC_PATH</code>를 다시 export 해야 한다.</p>
+<h3 id="8-6-편의-설정-선택"><a class="heading-link" href="#8-6-편의-설정-선택">8-6. 편의 설정 (선택)</a></h3>
+<p><code>~/.tmux.conf</code>:</p>
+<div class="expressive-code"><figure class="frame"><figcaption class="header"></figcaption><pre data-language="plaintext"><code><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">set -g mouse on              # 마우스 스크롤 / pane 선택</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">set -g history-limit 50000   # 스크롤백 버퍼 확대</span></div></div><div class="ec-line"><div class="code"><span style="--0:#e1e4e8">set -g status-bg colour235</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="set -g mouse on              # 마우스 스크롤 / pane 선택set -g history-limit 50000   # 스크롤백 버퍼 확대set -g status-bg colour235"><div></div></button></div></figure></div>
+<p>적용:</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">tmux</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">source-file</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">~/.tmux.conf</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="tmux source-file ~/.tmux.conf"><div></div></button></div></figure></div>
+<h3 id="8-7-세션-정리"><a class="heading-link" href="#8-7-세션-정리">8-7. 세션 정리</a></h3>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">tmux</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">kill-session</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-t</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">ex1</span><span style="--0:#E1E4E8">     </span><span style="--0:#99A0A6"># 특정 세션</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">tmux</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">kill-server</span><span style="--0:#E1E4E8">             </span><span style="--0:#99A0A6"># 전체</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="tmux kill-session -t ex1     # 특정 세션tmux kill-server             # 전체"><div></div></button></div></figure></div>
+<p>퍼징을 멈출 때는 attach 한 뒤 <code>Ctrl+c</code>로 afl-fuzz를 먼저 정상 종료시키자.
+<code>out/</code> 디렉터리의 상태 파일이 깔끔하게 저장된다.</p>
+<hr/>
+<h2 id="9-실습-시작-전-체크리스트"><a class="heading-link" href="#9-실습-시작-전-체크리스트">9. 실습 시작 전 체크리스트</a></h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled/> <code>cd .../Exercise_N/plygnd</code> — 작업할 exercise의 playground로</li>
+<li class="task-list-item"><input type="checkbox" disabled/> <code>tmux new -s exN</code> — <strong>세션 먼저 열고</strong></li>
+<li class="task-list-item"><input type="checkbox" disabled/> <code>export STATIC_PATH=$PWD</code> — tmux 세션 안의 셸에서</li>
+<li class="task-list-item"><input type="checkbox" disabled/> <code>echo $STATIC_PATH</code> — 경로 눈으로 확인</li>
+<li class="task-list-item"><input type="checkbox" disabled/> <code>cat /proc/sys/kernel/core_pattern</code> → <code>core</code> (재부팅했다면 다시)</li>
+<li class="task-list-item"><input type="checkbox" disabled/> <code>nm &lt;타깃&gt; | grep -i afl</code> → 계측 심볼 존재</li>
+<li class="task-list-item"><input type="checkbox" disabled/> 이전 <code>out/</code> 디렉터리 정리</li>
+<li class="task-list-item"><input type="checkbox" disabled/> 환경변수는 명령 <strong>앞</strong>에 배치</li>
+</ul>
+<hr/>
+<h2 id="10-정리"><a class="heading-link" href="#10-정리">10. 정리</a></h2>
+<p>이 글에서 한 일을 요약하면 이렇다.</p>
+<ol>
+<li><strong>퍼징 개념 정리</strong> — 커버리지 기반 진화형 퍼저가 왜 효과적인지, 계측이 왜 필수인지</li>
+<li><strong>저장소 정리</strong> — 클론 후 폴더명의 공백을 언더바로 치환</li>
+<li><strong>구조 재설계</strong> — 각 Exercise 안에 <code>plygnd</code>를 만들어 실습 결과물을 격리</li>
+<li><strong>경로 변수 교체</strong> — Readme의 <code>$HOME</code>을 <code>$STATIC_PATH</code>로 일괄 치환</li>
+<li><strong>운용 원칙</strong> — <code>.bashrc</code>에 박지 않고, plygnd에서 tmux를 열어 그 안에서 export</li>
+</ol>
+<p>원본 코스는 “전용 VM을 쓴다”는 전제 위에 있다.
+그 전제를 걷어내고 일반 서버에서 쓰려면 <strong>경로 격리</strong>와 <strong>세션 유지</strong>,
+이 두 가지만 해결하면 된다. 나머지는 원본 Readme를 그대로 따라가면 된다.</p>
+<p>이제 Exercise 1의 CVE-2019-13288을 찾으러 가보자.</p>
+<hr/>
+<h3 id="참고-링크"><a class="heading-link" href="#참고-링크">참고 링크</a></h3>
+<ul>
+<li><a href="https://github.com/antonio-morales/Fuzzing101">Fuzzing101 저장소</a></li>
+<li><a href="https://github.com/AFLplusplus/AFLplusplus">AFL++ 저장소</a></li>
+<li><a href="https://securitylab.github.com/">GitHub Security Lab</a></li>
+</ul> </div> <nav class="post-nav"> <span></span> <span></span> </nav>  </main> <footer class="site-footer"> <span>&copy; 2026 mu1aq</span> <span>FOR_THE_DEEP_DIVE</span> </footer> </div> <script type="module">(()=>{const o=document.getElementById("posts-btn"),e=document.getElementById("posts-drawer"),n=document.getElementById("drawer-overlay"),t=document.getElementById("drawer-close");if(!o||!e||!n||!t)return;let s=null;const u=()=>{s=document.activeElement,e.classList.add("open"),n.classList.add("open"),e.setAttribute("aria-hidden","false"),o.setAttribute("aria-expanded","true"),document.body.style.overflow="hidden",requestAnimationFrame(()=>requestAnimationFrame(()=>t.focus()))},a=()=>{e.classList.remove("open"),n.classList.remove("open"),e.setAttribute("aria-hidden","true"),o.setAttribute("aria-expanded","false"),document.body.style.overflow="",s?.focus()};o.addEventListener("click",u),t.addEventListener("click",a),n.addEventListener("click",a),document.addEventListener("keydown",c=>{if(c.key==="Escape"&&e.classList.contains("open")){a();return}if(c.key!=="Tab"||!e.classList.contains("open"))return;const r=e.querySelectorAll("a[href], button:not([disabled])");if(!r.length)return;const i=r[0],d=r[r.length-1];c.shiftKey&&document.activeElement===i?(c.preventDefault(),d.focus()):!c.shiftKey&&document.activeElement===d?(c.preventDefault(),i.focus()):e.contains(document.activeElement)||(c.preventDefault(),i.focus())})})();document.querySelectorAll(".prose .heading-link").forEach(o=>{const e=o;e.addEventListener("click",()=>{const n=e.getAttribute("href")||"",t=location.origin+location.pathname+n;navigator.clipboard?.writeText(t).catch(()=>{}),e.setAttribute("data-copied","1"),setTimeout(()=>e.removeAttribute("data-copied"),1200)})});const l=[...document.querySelectorAll(".toc-rail a")];if(l.length){const o=new Map;l.forEach(n=>{const t=decodeURIComponent((n.getAttribute("href")||"").slice(1)),s=t&&document.getElementById(t);s&&o.set(s,n)});const e=new IntersectionObserver(n=>{n.forEach(t=>{t.isIntersecting&&(l.forEach(s=>s.classList.remove("active")),o.get(t.target)?.classList.add("active"))})},{rootMargin:"0px 0px -78% 0px",threshold:0});o.forEach((n,t)=>e.observe(t))}</script> </body> </html>

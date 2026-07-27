@@ -1,0 +1,300 @@
+---
+title: "Fuzzing101-Exercise_1[ko]"
+date: 2026-07-27
+author: "mu1aq"
+tags: ["fuzzing", "Fuzzing101"]
+description: ""
+cover: "./images/fuzzing.jpg"   # 썸네일: 이미지를 images/ 에 넣고 이 줄 주석 해제
+draft: true
+---
+
+
+# Fuzzing101 Exercise_1
+
+Enviroment: Ubuntu 24.04 server LTS (connect as SSH), AFL++ 4.36a
+
+Github : [https://github.com/antonio-morales/Fuzzing101/tree/main/Exercise%201](https://github.com/antonio-morales/Fuzzing101/tree/main/Exercise%201)
+
+---
+
+## 0. tmux 세션 열기 (제일 먼저)
+
+SSH 연결이 끊기면 그 셸에서 돌던 프로세스도 같이 죽는다. 빌드는 수 분, 퍼징은 1~2시간이 걸리므로
+**접속하자마자 tmux부터 띄우는 것**을 습관으로 삼는다.
+
+```bash
+sudo apt install tmux     # 최초 1회
+
+ssh <user>@<ip or hostname\>
+tmux new -s fuzz          # 'fuzz' 라는 이름의 세션 생성
+```
+
+이미 세션이 있다면:
+
+```bash
+tmux ls                   # 살아있는 세션 목록
+tmux attach -t fuzz       # 다시 붙기
+```
+
+분리(detach)는 `Ctrl+b` 를 누르고 뗀 뒤 `d`. 이후 SSH를 끊어도 세션 안 프로세스는 계속 돈다.
+
+> 아래 1번부터의 모든 명령은 **tmux 세션 안의 셸**에서 실행한다.
+> 특히 `STATIC_PATH` 는 세션 안에서 export 해야 한다. 바깥 셸에서 설정하고 attach 해봐야 반영되지 않는다.
+
+---
+
+## 1. 환경 준비
+
+### 1-1. `STATIC_PATH` 지정
+
+Exercise마다 작업 디렉터리가 다르므로 `~/.bashrc` 에 박아두지 말고, 실습 디렉터리에서 그때그때 지정한다.
+
+```bash
+cd ~/study/Fuzzing101/Exercise_1/plygnd
+export STATIC_PATH=$PWD
+echo $STATIC_PATH         # 확인
+```
+
+- `export` 없이 `STATIC_PATH=$PWD` 만 해도 같은 셸 안에서는 확장되지만, `export` 를 붙여야 서브셸/자식 프로세스에서도 유효하다.
+- 처음엔 `$PWD` 를 그대로 쓰려 했으나, `cd` 할 때마다 값이 바뀌어 문서 중간에 디렉터리 이동이 섞이면 경로가 꼬인다. 그래서 **한 번 고정해두는 `$STATIC_PATH`** 방식으로 전환했다.
+
+Docker를 쓰는 경우:
+
+```bash
+docker run -ti -v $STATIC_PATH:/home aflplusplus/aflplusplus
+# 컨테이너 안에서
+export STATIC_PATH=/home
+```
+
+### 1-2. `core_pattern` 설정
+
+이걸 안 하면 퍼징 시작 시 `PROGRAM ABORT : Pipe at the beginning of 'core_pattern'` 로 즉시 중단된다.
+시스템이 코어 덤프를 외부 유틸리티로 넘기도록 돼 있어, 크래시가 타임아웃으로 오인되기 때문이다.
+
+```bash
+cat /proc/sys/kernel/core_pattern            # 현재 값 확인
+echo core | sudo tee /proc/sys/kernel/core_pattern
+```
+
+> `sudo su` 후 `echo core > /proc/sys/kernel/core_pattern` 는 리다이렉션이 **원래 셸 권한**으로 평가돼
+> Permission denied 가 난다. 반드시 `sudo tee` 를 쓸 것.
+>
+> **재부팅하면 초기화된다.** 영구 적용하려면 `/etc/sysctl.d/99-afl.conf` 에 `kernel.core_pattern=core` 추가.
+
+### 1-3. AFL 컴파일러 확인
+
+```bash
+which afl-fuzz afl-clang-fast afl-clang-fast++ afl-clang-lto
+```
+
+---
+
+## 2. Readme의 `$HOME` → `$STATIC_PATH` 치환
+
+원본 Readme들은 실습 경로를 `$HOME` 기준으로 안내한다. 저장소를 `~/study/Fuzzing101` 아래에 두고
+실습하므로 `$STATIC_PATH` 기준으로 바꿔둔다.
+
+### 사전 확인
+
+```bash
+cd ~/study/Fuzzing101
+grep -rn --include='Readme.md' '\$HOME' .
+grep -rn --include='Readme.md' '{HOME}' .   # ${HOME} 형태 누락 확인
+```
+
+### 치환
+
+```bash
+# 1) export $HOME="/home" 줄만 먼저 처리 (원본의 오타이기도 함 — 앞의 $ 제거)
+find . -type f -name 'Readme.md' -exec \
+  sed -i.bak 's/^\( *\)export \$HOME=/\1export STATIC_PATH=/' {} +
+
+# 2) 나머지 전부 치환
+find . -type f -name 'Readme.md' -exec \
+  sed -i 's/\${HOME}/${STATIC_PATH}/g; s/\$HOME/$STATIC_PATH/g' {} +
+```
+
+> **순서 주의**: `${HOME}` 을 먼저 처리해야 한다. 반대로 하면 `${STATIC_PATH` 처럼 중괄호가 깨진다.
+
+### 검증 및 백업 정리
+
+```bash
+grep -rn --include='Readme.md' 'HOME' .            # 남은 게 없어야 정상
+grep -rn --include='Readme.md' 'STATIC_PATH' . | head -20
+find . -name 'Readme.md.bak' -delete               # 확인 끝난 뒤
+```
+
+### 백업에서 되돌리기
+
+```bash
+find . -type f -name 'Readme.md.bak' -exec sh -c 'mv "$1" "${1%.bak}"' _ {} \;
+```
+
+### 치환되지 않는 항목
+
+- `Exercise_3/Readme.md:184` — `/home/antonio/fuzzing_tcpdump/out/...`
+  원저자의 절대경로가 하드코딩된 예시 출력이라 패턴에 안 걸린다. 필요하면 수동으로 수정.
+
+---
+
+## 3. 계측(instrumentation) 빌드
+
+Exercise_1은 빌드를 두 번 한다.
+
+1. **일반 빌드** — 타깃이 정상 동작하는지 확인용
+2. **AFL 컴파일러로 재빌드** — 퍼징용
+
+2단계를 건너뛰면 퍼징 시작 시 `PROGRAM ABORT : No instrumentation detected` 가 뜬다.
+AFL이 커버리지 피드백을 읽으려면 컴파일 시점에 계측이 들어가 있어야 하기 때문이다.
+
+### 재빌드
+
+```bash
+rm -rf $STATIC_PATH/fuzzing_xpdf/install
+cd $STATIC_PATH/fuzzing_xpdf/xpdf-3.02/
+make clean
+
+CC=afl-clang-fast CXX=afl-clang-fast++ \
+  ./configure --prefix="$STATIC_PATH/fuzzing_xpdf/install/"
+make
+make install
+```
+
+빌드는 시간이 걸리므로 tmux 세션 안에서 돌리고, 필요하면 `Ctrl+b` → `d` 로 분리해두면 된다.
+
+### 확인 포인트
+
+- `configure` 출력에서 컴파일러가 `afl-clang-fast` 로 잡히는지
+- `make` 로그에 `Instrumented N locations` 류의 줄이 뜨는지
+- 빌드 완료 후:
+
+```bash
+nm $STATIC_PATH/fuzzing_xpdf/install/bin/pdftotext | grep -i afl
+# AFL 심볼이 나와야 정상. 아무것도 안 나오면 계측 실패
+```
+
+---
+
+## 4. 퍼징 실행
+
+이전 실패 시도로 `out/` 에 깨진 세션이 남아 있을 수 있으므로 지우고 시작한다.
+
+```bash
+rm -rf $STATIC_PATH/fuzzing_xpdf/out
+
+afl-fuzz -i $STATIC_PATH/fuzzing_xpdf/pdf_examples/ \
+         -o $STATIC_PATH/fuzzing_xpdf/out/ \
+         -s 123 \
+         -- $STATIC_PATH/fuzzing_xpdf/install/bin/pdftotext @@ $STATIC_PATH/fuzzing_xpdf/output
+```
+
+화면이 뜨면 `Ctrl+b` → `d` 로 분리하고 SSH를 끊어도 된다.
+크래시 파일 위치: `$STATIC_PATH/fuzzing_xpdf/out/default/crashes/`
+
+---
+
+## 5. tmux 운용
+
+### 자주 쓰는 키
+
+모두 **prefix(`Ctrl+b`)를 먼저 누르고 뗀 뒤** 해당 키를 누른다.
+
+| 키 | 동작 |
+|---|---|
+| `d` | detach (세션은 계속 실행) |
+| `[` | 스크롤 모드 진입 (`q` 로 나감) |
+| `c` | 새 창 생성 |
+| `n` / `p` | 다음 / 이전 창 |
+| `0`~`9` | 번호로 창 이동 |
+| `"` | 가로 분할 |
+| `%` | 세로 분할 |
+| `방향키` | 분할된 pane 간 이동 |
+| `&` | 현재 창 종료 |
+
+AFL 화면은 자체 갱신되므로 마우스 휠이 안 먹는다. 로그를 거슬러 보려면 `Ctrl+b` → `[` 로
+스크롤 모드에 들어간 뒤 방향키/PageUp을 쓴다.
+
+### 창 분할해서 모니터링
+
+퍼징 화면은 그대로 두고 다른 pane에서 상태를 확인할 수 있다.
+
+```bash
+# Ctrl+b " 로 가로 분할한 뒤, 아래쪽 pane에서
+watch -n 5 afl-whatsup $STATIC_PATH/fuzzing_xpdf/out/
+
+# 또는 크래시 개수만 계속 확인
+watch -n 10 'ls $STATIC_PATH/fuzzing_xpdf/out/default/crashes/ | wc -l'
+```
+
+새로 만든 pane은 별도 셸이므로 `export STATIC_PATH=...` 를 다시 해줘야 한다.
+
+### 세션 정리
+
+```bash
+tmux kill-session -t fuzz   # 특정 세션 종료
+tmux kill-server            # 전체 종료
+```
+
+퍼징을 멈추려면 attach 한 뒤 `Ctrl+c` 로 afl-fuzz 를 먼저 끄고 세션을 정리하는 편이 안전하다.
+`out/` 디렉터리 상태가 깔끔하게 남는다.
+
+### 편의 설정 (선택)
+
+`~/.tmux.conf`:
+
+```
+set -g mouse on              # 마우스 스크롤/pane 선택 허용
+set -g history-limit 50000   # 스크롤백 늘리기
+set -g status-bg colour235
+```
+
+적용: `tmux source-file ~/.tmux.conf` (또는 새 세션부터 반영)
+
+> `screen` 을 이미 쓰고 있다면 `screen -S fuzz` → `Ctrl+a d` 로 detach, `screen -r fuzz` 로 재접속.
+> 굳이 바꿀 필요는 없다.
+
+---
+
+## 6. `AFL_SKIP_BIN_CHECK` 에 대한 오해
+
+계측 오류를 우회하려 시도했던 두 방식 모두 **애초에 적용되지 않았다**:
+
+| 시도 | 실제 동작 |
+|---|---|
+| `afl-fuzz ... pdftotext @@ output AFL_SKIP_BIN_CHECK=1` | pdftotext의 세 번째 **인자**로 전달됨 |
+| 별도 줄에 `AFL_SKIP_BIN_CHECK=1` | `export` 없어서 셸 변수일 뿐, 자식 프로세스 환경에 미전달 |
+
+올바른 형태는 명령 **앞**에 붙이는 것:
+
+```bash
+AFL_SKIP_BIN_CHECK=1 afl-fuzz ...
+```
+
+**다만 이 실습에서는 쓰면 안 된다.** 이 옵션은 "계측이 안 됐어도 그냥 돌려라" 라는 뜻이라,
+통과시켜도 커버리지 피드백 없는 순수 랜덤 뮤테이션이 되어 실습 목적이 사라진다.
+근본 해결은 3번의 계측 재빌드.
+
+---
+
+## 7. 실행 전 체크리스트
+
+- [ ] `tmux new -s fuzz` 또는 `tmux attach -t fuzz` — **먼저 세션 안으로**
+- [ ] `export STATIC_PATH=$PWD` — tmux 세션 안의 셸에서
+- [ ] `cat /proc/sys/kernel/core_pattern` → `core` (재부팅했다면 다시)
+- [ ] `nm <타깃바이너리> | grep -i afl` → 심볼 존재
+- [ ] 이전 `out/` 디렉터리 정리
+- [ ] 환경변수는 명령 **앞**에 배치
+
+---
+
+## 8. 참고 — 관측된 환경 경고
+
+```
+[!] WARNING: Could not check CPU scaling governor
+[+] You have 2 CPU cores and N runnable tasks
+[!] WARNING: System under apparent load, performance may be spotty.
+```
+
+VM 환경이라 스케일링 거버너 확인이 안 되는 건 무시해도 된다.
+코어가 2개뿐이므로 다른 작업과 병행하면 퍼징 속도가 눈에 띄게 떨어진다.
+크래시까지 1~2시간 걸릴 수 있으니 tmux 안에서 돌리고 분리해두는 것이 사실상 필수다.
